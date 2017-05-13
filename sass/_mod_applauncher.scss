@@ -1,0 +1,12 @@
+$tr-open-info-len: 1s;
+$tr-open-app-len: 1s;
+
+body {
+  transition: background-color 1s;
+  overflow: hidden;
+  @include unselectable;
+}
+
+body.app-open {
+  background-color: $color-black-real;
+}
