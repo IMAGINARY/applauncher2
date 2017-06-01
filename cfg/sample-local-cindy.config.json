@@ -1,0 +1,17 @@
+{
+  "lang": "en",
+  "apps": [
+    "apps/cindyjs/iornament",
+    "apps/cindyjs/doppelpendel",
+    "apps/cindyjs/fish",
+    "apps/cindyjs/sphere-chaos",
+    "apps/cindyjs/ausparken",
+    "apps/cindyjs/kaleidoskop",
+    "apps/cindyjs/platonic-solids",
+    "apps/cindyjs/polytope-morpher",
+    "apps/cindyjs/solitaire",
+    "apps/cindyjs/image-spiral",
+    "apps/cindyjs/tree"
+  ],
+  "infoApp": "apps/cindyjs/info"
+}
