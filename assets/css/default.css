@@ -3032,30 +3032,13 @@ body {
   text-align: center;
   font-size: 0; }
   .menu-main-row .menu-main-button {
-    display: inline-block; }
+    display: inline-block;
+    width: 16.66667%; }
 
 .menu-main-2-rows {
   height: 50vh; }
   .menu-main-2-rows .menu-main-row {
     height: 25vh; }
-
-.menu-main-row-6 .menu-main-button {
-  width: 16.66667%; }
-
-.menu-main-row-5 .menu-main-button {
-  width: 20%; }
-
-.menu-main-row-4 .menu-main-button {
-  width: 25%; }
-
-.menu-main-row-3 .menu-main-button {
-  width: 33.33333%; }
-
-.menu-main-row-2 .menu-main-button {
-  width: 50%; }
-
-.menu-main-row-1 .menu-main-button {
-  width: 100%; }
 
 .menu-main-button {
   display: block;

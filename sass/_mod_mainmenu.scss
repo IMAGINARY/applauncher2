@@ -15,6 +15,7 @@
   font-size: 0;
   .menu-main-button {
     display: inline-block;
+    width: percentage(1 / 6);
   }
 }
 
@@ -23,30 +24,6 @@
   .menu-main-row {
     height: 25vh;
   }
-}
-
-.menu-main-row-6 .menu-main-button {
-  width: percentage(1 / 6);
-}
-
-.menu-main-row-5 .menu-main-button {
-  width: percentage(1 / 5);
-}
-
-.menu-main-row-4 .menu-main-button {
-  width: percentage(1 / 4);
-}
-
-.menu-main-row-3 .menu-main-button {
-  width: percentage(1 / 3);
-}
-
-.menu-main-row-2 .menu-main-button {
-  width: percentage(1 / 2);
-}
-
-.menu-main-row-1 .menu-main-button {
-  width: percentage(1 / 1);
 }
 
 .menu-main-button {
