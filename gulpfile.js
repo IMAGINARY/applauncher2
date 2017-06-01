@@ -7,6 +7,7 @@ var js_out_dir = '/assets/js';
 // CSS Output directory. Relative to the public directory. No trailing /.
 var css_out_dir = '/assets/css';
 
+var conf = require('./package.json');
 var gulp = require('gulp');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
@@ -14,6 +15,8 @@ var gutil = require('gulp-util');
 var babelify = require('babelify');
 var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
+var pack = require('tar-pack').pack;
+var write = require('fs').createWriteStream;
 
 var dependencies = [
 ];
@@ -84,6 +87,19 @@ gulp.task('sass', function () {
 
 gulp.task('sass:watch', function () {
   gulp.watch('./sass/**/*.scss', ['sass']);
+});
+
+gulp.task('distribute', function () {
+  pack(process.cwd(), {
+    ignoreFiles: ['.distignore']
+  })
+  .pipe(write('dist/applauncher2-' + conf.version + '.tar.gz'))
+  .on('error', function (err) {
+    console.error(err.stack)
+  })
+  .on('close', function () {
+    console.log('done')
+  });
 });
 
 gulp.task('default', ['sass', 'scripts:dev']);

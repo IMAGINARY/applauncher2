@@ -1,6 +1,6 @@
 {
   "name": "applauncher2",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "IMAGINARY - AppLauncher Mark II",
   "repository": "IMAGINARY/applauncher2",
   "private": true,
@@ -20,6 +20,7 @@
     "gulp-sass": "^2.1.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-util": "^3.0.7",
+    "tar-pack": "^3.4.0",
     "vinyl-source-stream": "^1.1.0"
   },
   "scripts": {
