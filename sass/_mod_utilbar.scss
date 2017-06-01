@@ -3,30 +3,27 @@
   position: absolute;
   z-index: $z-util-bar;
   bottom: 2vh;
-  right: -9vw;
+  right: 1vw;
   width: 98vw;
   text-align: right;
-  transition-duration: $tr-open-info-len;
-  transition-property: right, bottom;
 
   .util-button {
     display: inline-block;
-    margin-left: 1vw;
-    transition-duration: $tr-open-info-len;
-    transition-property: font-size, line-height;
-  }
-
-  [data-close-info-pane] {
-    color: $color-yellow;
-    transition: opacity 0.3s 0s, font-size $tr-open-info-len, line-height $tr-open-info-len;
-    opacity: 0;
   }
 }
 
 .util-button {
-  @include mediumHeading;
   padding: 1vh 1vw;
   color: $color-text-dim;
+  font-size: 5vh;
+  line-height: 5vh;
+}
+
+.util-button-close {
+  position: absolute;
+  left: 0;
+  margin-top: 10vw;
+  transition: margin-top 0.3s;
 }
 
 .info-button {
@@ -40,11 +37,6 @@
 .info-open {
   .util-bar {
     right: 2vw;
-
-    [data-close-info-pane] {
-      transition: opacity 0.3s $tr-open-info-len * 0.7, font-size $tr-open-info-len, line-height $tr-open-info-len;
-      opacity: 1;
-    }
   }
   .util-button {
     @include smallHeading;
@@ -54,5 +46,24 @@
 .app-open {
   .util-bar {
     bottom: -10vh;
+  }
+}
+
+.titlePane {
+  position: absolute;
+  top: 10vh;
+  left: 25%;
+  width: 50%;
+  height: 5vh;
+  font-size: 5vh;
+  line-height: 5vh;
+  text-align: center;
+  transition: opacity 0.5s;
+  opacity: 0;
+
+  &.visible {
+    top: 1vh;
+    transition: top 0.5s 0.2s;
+    opacity: 1;
   }
 }

@@ -1,0 +1,23 @@
+.appPane {
+  background-color: $color-black;
+  position: absolute;
+  z-index: $z-app-list;
+  left: 0;
+  bottom: 10vh;
+  padding: 0;
+  margin: 0 auto;
+  width: 100%;
+  height: 80vh;
+}
+
+.appContainer {
+  display: none;
+  position: absolute;
+  z-index: $z-app-list;
+  left: 0;
+  padding: 0;
+  margin: 0 auto;
+  width: 100%;
+  height: 80vh;
+  bottom: 10vh;
+}

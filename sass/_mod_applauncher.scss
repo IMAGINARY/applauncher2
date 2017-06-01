@@ -1,12 +1,14 @@
-$tr-open-info-len: 1s;
-$tr-open-app-len: 1s;
-
 body {
-  transition: background-color 1s;
   overflow: hidden;
   @include unselectable;
 }
 
-body.app-open {
-  background-color: $color-black-real;
+.inputmask {
+  background-color: rgba(0, 0, 0, 0);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99999;
 }

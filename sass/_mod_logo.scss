@@ -2,16 +2,15 @@
   position: absolute;
   z-index: $z-logo;
   top: 11.5vh;
+  left: 5%;
 
   @include image-replace;
   @include image-replace-src('../img/lg_imaginary_white.png', 3320px, 419px);
   background-size: contain;
   background-position: center top;
-  width: 100%;
+  width: 90%;
   height: 15vh;
   margin: 0 auto;
-  transition-duration: $tr-open-info-len;
-  transition-property: top, height;
 }
 
 .info-open {
