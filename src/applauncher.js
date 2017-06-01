@@ -1,4 +1,5 @@
 import Application from './application';
+import BrowserHelper from './browser-helper';
 
 const Promise = require('bluebird');
 const superagent = require('superagent');
@@ -26,6 +27,10 @@ export default class AppLauncher {
         return Promise.all(tasks);
       })
       .then(() => {
+        const qs = BrowserHelper.getQueryString();
+        if (qs.lang) {
+          this.lang = qs.lang;
+        }
         this.setMenuMode();
         this.enableUserInput();
       });
