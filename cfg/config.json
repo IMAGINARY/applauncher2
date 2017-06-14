@@ -1,5 +1,7 @@
 {
   "lang": "en",
+  "title": "IMAGINARY",
+  "logo": "assets/img/lg_imaginary_white.png",
   "apps": [
     "https://imaginary.github.io/cindyjs-apps/iornament",
     "https://imaginary.github.io/cindyjs-apps/doppelpendel",

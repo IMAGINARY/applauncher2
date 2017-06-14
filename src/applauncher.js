@@ -10,6 +10,7 @@ export default class AppLauncher {
     this.config = {};
     this.lang = 'en';
     this.title = 'IMAGINARY';
+    this.logo = '';
     this.apps = [];
     this.appContainer = null;
     this.runningApp = null;
@@ -259,9 +260,30 @@ export default class AppLauncher {
     return appContainer;
   }
 
+  renderLogo() {
+    const $logo = $("<a href='#' class='logo'></a>")
+      .on('click', this.onLogoClicked.bind(this));
+
+    if (this.config.logo !== undefined) {
+      if (typeof this.config.logo === 'string') {
+        this.logo = this.config.logo;
+      } else if (typeof this.config.logo === 'object') {
+        if (this.config.logo[this.lang] !== undefined) {
+          this.logo = this.config.logo[this.lang];
+        } else if (this.config.logo.default !== undefined) {
+          this.logo = this.config.logo.default;
+        }
+      }
+    }
+
+    $logo.css('background-image', `url(${this.logo})`);
+
+    return $logo;
+  }
+
   render() {
     const view = $("<div class='appLauncher'></div>");
-    view.append($("<a href='#' class='logo'></a>").on('click', this.onLogoClicked.bind(this)));
+    view.append(this.renderLogo());
     view.append(this.renderMainMenu());
     view.append(this.renderAppPane());
     view.append(this.renderAppContainer());

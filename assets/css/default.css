@@ -2997,15 +2997,9 @@ body {
   top: 11.5vh;
   left: 5%;
   display: block;
-  text-indent: -100em;
-  white-space: nowrap;
-  overflow: hidden;
-  background-repeat: no-repeat;
-  background-image: url("../img/lg_imaginary_white.png");
-  width: 3320px;
-  height: 419px;
   background-size: contain;
-  background-position: center top;
+  background-position: center center;
+  background-repeat: no-repeat;
   width: 90%;
   height: 15vh;
   margin: 0 auto; }
