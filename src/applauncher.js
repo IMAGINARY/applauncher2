@@ -7,7 +7,9 @@ const superagent = require('superagent');
 export default class AppLauncher {
 
   constructor() {
+    this.config = {};
     this.lang = 'en';
+    this.title = 'IMAGINARY';
     this.apps = [];
     this.appContainer = null;
     this.runningApp = null;
@@ -19,6 +21,7 @@ export default class AppLauncher {
   init() {
     return this.readConfig()
       .then((config) => {
+        this.config = config;
         const tasks = [];
         tasks.push(this.loadApps(config.apps));
         if (config.infoApp) {
@@ -31,6 +34,7 @@ export default class AppLauncher {
         if (qs.lang) {
           this.lang = qs.lang;
         }
+        this.setTitle();
         this.setMenuMode();
         this.enableUserInput();
       });
@@ -144,6 +148,20 @@ export default class AppLauncher {
 
   clearMode() {
     $('body').removeClass((index, className) => (className.match(/(^|\s)mode-\S+/g) || []).join(' '));
+  }
+
+  setTitle() {
+    if (typeof this.config.title === 'string') {
+      this.title = this.config.title;
+    } else if (typeof this.config.title === 'object') {
+      if (this.config.title[this.lang] !== undefined) {
+        this.title = this.config.title[this.lang];
+      } else {
+        // Defaults to english
+        this.title = this.config.title.en;
+      }
+    }
+    document.title = this.title;
   }
 
   setMenuMode() {
