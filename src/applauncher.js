@@ -17,6 +17,7 @@ export default class AppLauncher {
     this.infoApp = null;
     this.$inputMask = $('<div class="inputmask"></div>');
     this.$titlePane = $('<div class="titlePane"></div>');
+    this.$logoText = null;
   }
 
   init() {
@@ -37,8 +38,25 @@ export default class AppLauncher {
         }
         this.setTitle();
         this.setMenuMode();
+        this.initResizeHandler();
         this.enableUserInput();
       });
+  }
+
+  initResizeHandler() {
+    // Timeout for throttled resize
+    let resizeTimeout;
+
+    window.addEventListener('resize', () => {
+      // ignore resize events as long as an actualResizeHandler execution is in the queue
+      if (!resizeTimeout) {
+        resizeTimeout = setTimeout(() => {
+          resizeTimeout = null;
+          this.onResize();
+          // The actualResizeHandler will execute at a rate of 15fps
+        }, 66);
+      }
+    });
   }
 
   readConfig() {
@@ -276,9 +294,37 @@ export default class AppLauncher {
       }
     }
 
-    $logo.css('background-image', `url(${this.logo})`);
+    if (this.logo !== '') {
+      $logo.css('background-image', `url(${this.logo})`);
+    } else {
+      // If there is no logo use the title
+      this.$logoText = $("<div class='logo-text'></div>").text(this.title);
+      $logo.append($("<div class='logo-text-wrapper'></div>").append(this.$logoText));
+    }
 
     return $logo;
+  }
+
+  resizeTitle() {
+    if (this.$logoText) {
+      const maxWidth = window.innerWidth * 0.9;
+      const maxHeight = window.innerHeight * 0.15;
+      const newScale = Math.min(
+        maxHeight / this.$logoText.outerHeight(),
+        maxWidth / this.$logoText.outerWidth(),
+        1
+      );
+
+      this.$logoText.css('transform', `scale(${newScale})`);
+    }
+  }
+
+  onResize() {
+    this.resizeTitle();
+  }
+
+  onReady() {
+    this.resizeTitle();
   }
 
   render() {

@@ -1,19 +1,24 @@
 {
   "lang": "en",
-  "title": "IMAGINARY",
-  "logo": "assets/img/lg_imaginary_white.png",
+  "title": {
+    "en": "Math to Touch",
+    "es": "Matemática para tocar"
+  },
+  "logo": {
+    "lg": "assets/img/lg_imaginary_white.png"
+  },
   "apps": [
-    "https://imaginary.github.io/cindyjs-apps/iornament",
-    "https://imaginary.github.io/cindyjs-apps/doppelpendel",
-    "https://imaginary.github.io/cindyjs-apps/fish",
-    "https://imaginary.github.io/cindyjs-apps/sphere-chaos",
-    "https://imaginary.github.io/cindyjs-apps/ausparken",
-    "https://imaginary.github.io/cindyjs-apps/kaleidoskop",
-    "https://imaginary.github.io/cindyjs-apps/platonic-solids",
-    "https://imaginary.github.io/cindyjs-apps/polytope-morpher",
-    "https://imaginary.github.io/cindyjs-apps/solitaire",
-    "https://imaginary.github.io/cindyjs-apps/image-spiral",
-    "https://imaginary.github.io/cindyjs-apps/tree"
+    "apps/cindyjs/iornament",
+    "apps/cindyjs/doppelpendel",
+    "apps/cindyjs/fish",
+    "apps/cindyjs/sphere-chaos",
+    "apps/cindyjs/ausparken",
+    "apps/cindyjs/kaleidoskop",
+    "apps/cindyjs/platonic-solids",
+    "apps/cindyjs/polytope-morpher",
+    "apps/cindyjs/solitaire",
+    "apps/cindyjs/image-spiral",
+    "apps/cindyjs/tree"
   ],
-  "infoApp": "https://imaginary.github.io/cindyjs-apps/info"
+  "infoApp": "apps/cindyjs/info"
 }

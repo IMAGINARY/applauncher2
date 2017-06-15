@@ -1,5 +1,12 @@
 {
   "lang": "en",
+  "title": {
+    "en": "Math to Touch",
+    "es": "Matemática para tocar"
+  },
+  "logo": {
+    "lg": "assets/img/lg_imaginary_white.png"
+  },
   "apps": [
     "apps/cindyjs/iornament",
     "apps/cindyjs/doppelpendel",

@@ -7,6 +7,14 @@ body {
 .logo {
   transition-duration: $tr-open-app-len;
   transition-property: top, height;
+  .logo-text-wrapper {
+    transition-duration: $tr-open-app-len;
+    transition-property: transform;
+  }
+  .logo-text {
+    transition-duration: $tr-open-app-len;
+    transition-property: line-height;
+  }
 }
 
 .appPane {
@@ -40,6 +48,9 @@ body.mode-menu {
   }
 
   .logo {
+    .logo-text-wrapper {
+      transform: scale(1);
+    }
   }
 }
 
@@ -49,7 +60,14 @@ body.mode-app {
   .logo {
     top: 2.5vh;
     height: 5vh;
+    .logo-text-wrapper {
+      transform: scale(0.4);
+    }
+    .logo-text {
+      line-height: 4.5vh;
+    }
   }
+
   .menu-main {
     opacity: 0;
   }
