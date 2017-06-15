@@ -3,6 +3,7 @@ import BrowserHelper from './browser-helper';
 
 const Promise = require('bluebird');
 const superagent = require('superagent');
+const yaml = require('js-yaml');
 
 export default class AppLauncher {
 
@@ -63,10 +64,9 @@ export default class AppLauncher {
     console.log('Reading config');
     return new Promise((accept, reject) => {
       superagent
-        .get('cfg/config.json')
-        .set('Accept', 'json')
+        .get('cfg/config.yml')
         .then((response) => {
-          const config = response.body;
+          const config = yaml.safeLoad(response.text);
           if (config.lang) {
             this.lang = config.lang;
           }

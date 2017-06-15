@@ -1,0 +1,46 @@
+#
+# Default language
+#
+lang: en
+
+#
+# This title will be shown on top of the menu if no logo image is specified.
+# It's possible to specify a single string for all languages or to configure
+# each language separately.
+#
+title:
+  en: Math to Touch
+  es: Matemática para tocar
+
+#
+# Logo image to show on top of the menu.
+# It's possible to specify a single image file or to configure each language
+# separately. If separate languages are used then any languages without an
+# image will use the title instead. Use 'default' as a language code to have
+# a default fallback logo image.
+#
+#logo: assets/img/lg_imaginary_white.png
+
+#
+# List of apps to load in the menu
+# Each apps is specified by the path or URL to the app directory where the
+# app.json manifiest file is located.
+#
+apps:
+  - https://imaginary.github.io/cindyjs-apps/iornament
+  - https://imaginary.github.io/cindyjs-apps/doppelpendel
+  - https://imaginary.github.io/cindyjs-apps/fish
+  - https://imaginary.github.io/cindyjs-apps/sphere-chaos
+  - https://imaginary.github.io/cindyjs-apps/ausparken
+  - https://imaginary.github.io/cindyjs-apps/kaleidoskop
+  - https://imaginary.github.io/cindyjs-apps/platonic-solids
+  - https://imaginary.github.io/cindyjs-apps/polytope-morpher
+  - https://imaginary.github.io/cindyjs-apps/solitaire
+  - https://imaginary.github.io/cindyjs-apps/image-spiral
+  - https://imaginary.github.io/cindyjs-apps/tree
+
+#
+# App to load when the user clicks on the "info" button. Typically an
+# "about" or "credits" app.
+#
+infoApp: https://imaginary.github.io/cindyjs-apps/info
