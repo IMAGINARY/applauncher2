@@ -19,12 +19,20 @@ title:
 # image will use the title instead. Use 'default' as a language code to have
 # a default fallback logo image.
 #
-#logo: assets/img/lg_imaginary_white.png
+# example: Single image for all languages:
+#
+# logo: assets/img/lg_imaginary_white.png
+#
+# example: Only use logo for english and german
+#
+# logo:
+#   en: assets/img/lg_imaginary_white.png
+#   de: assets/img/lg_imaginary_white.png
 
 #
 # List of apps to load in the menu
-# Each apps is specified by the path or URL to the app directory where the
-# app.json manifiest file is located.
+# Each app is specified by the path or URL to the app directory where the
+# app.json manifest file is located.
 #
 apps:
   - https://imaginary.github.io/cindyjs-apps/iornament
