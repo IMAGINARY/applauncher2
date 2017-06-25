@@ -28,6 +28,7 @@ export default class AppLauncher {
 
   init() {
     this.$body = $('body');
+    this.$body.addClass('lock-position');
     return this.readConfig()
       .then((config) => {
         this.config = config;
