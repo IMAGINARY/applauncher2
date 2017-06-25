@@ -5,6 +5,8 @@ const Promise = require('bluebird');
 const superagent = require('superagent');
 const yaml = require('js-yaml');
 
+const languages = require('languages');
+
 export default class AppLauncher {
 
   constructor() {
@@ -16,12 +18,16 @@ export default class AppLauncher {
     this.appContainer = null;
     this.runningApp = null;
     this.infoApp = null;
+    this.$body = null;
     this.$inputMask = $('<div class="inputmask"></div>');
     this.$titlePane = $('<div class="titlePane"></div>');
     this.$logoText = null;
+    this.$overlayContainer = null;
+    this.overlayVisible = false;
   }
 
   init() {
+    this.$body = $('body');
     return this.readConfig()
       .then((config) => {
         this.config = config;
@@ -119,10 +125,22 @@ export default class AppLauncher {
       });
   }
 
+  setLang(langCode) {
+    this.lang = langCode;
+    this.setTitle();
+    $('.logo').replaceWith(this.renderLogo());
+    $('.menu-main').replaceWith(this.renderMainMenu());
+    this.resizeTitle();
+  }
+
   onLogoClicked() {
     this.closeApp();
     this.setMenuMode();
     return false;
+  }
+
+  onLangButton() {
+    this.showOverlay(this.renderLangMenu());
   }
 
   onInfoButton() {
@@ -134,8 +152,12 @@ export default class AppLauncher {
   }
 
   onCloseButton() {
-    this.closeApp();
-    this.setMenuMode();
+    if (this.overlayVisible) {
+      this.closeOverlay();
+    } else {
+      this.closeApp();
+      this.setMenuMode();
+    }
     return false;
   }
 
@@ -166,7 +188,7 @@ export default class AppLauncher {
   }
 
   clearMode() {
-    $('body').removeClass((index, className) => (className.match(/(^|\s)mode-\S+/g) || []).join(' '));
+    this.$body.removeClass((index, className) => (className.match(/(^|\s)mode-\S+/g) || []).join(' '));
   }
 
   setTitle() {
@@ -185,20 +207,36 @@ export default class AppLauncher {
 
   setMenuMode() {
     this.clearMode();
-    $('body').addClass('mode-menu');
+    this.$body.addClass('mode-menu');
   }
 
   setAppMode() {
     this.clearMode();
-    $('body').addClass('mode-app');
+    this.$body.addClass('mode-app');
   }
 
   setAppVisible(visibility) {
     if (visibility) {
-      $('body').addClass('app-visible');
+      this.$body.addClass('app-visible');
     } else {
-      $('body').removeClass('app-visible');
+      this.$body.removeClass('app-visible');
     }
+  }
+
+  showOverlay(content) {
+    this.overlayVisible = true;
+    this.setAppMode();
+    this.$body.addClass('overlay-visible');
+    this.$overlayContainer.append(content);
+  }
+
+  closeOverlay() {
+    this.$body.removeClass('overlay-visible');
+    this.$overlayContainer.empty();
+    if (this.runningApp === null) {
+      this.setMenuMode();
+    }
+    this.overlayVisible = false;
   }
 
   displayTitle(aTitle) {
@@ -220,6 +258,14 @@ export default class AppLauncher {
 
   renderUtilBar() {
     const utilBar = $('<div class="util-bar"></div>');
+
+    if (this.config.langMenuShow) {
+      utilBar.append(
+        $("<a class='util-button util-button-lang' href='#'><span class='fa fa-language'></span></a>")
+          .on('click', this.onLangButton.bind(this))
+      );
+    }
+
     // Info button
     if (this.infoApp) {
       utilBar.append(
@@ -268,10 +314,6 @@ export default class AppLauncher {
     return item;
   }
 
-  renderAppPane() {
-    return $('<div class="appPane"></div>');
-  }
-
   renderAppContainer() {
     const appContainer = $('<div class="appContainer"></div>');
     this.appContainer = appContainer[0];
@@ -305,6 +347,39 @@ export default class AppLauncher {
     return $logo;
   }
 
+  renderOverlayContainer() {
+    const $overlay = $("<div class='overlay'></div>");
+    $overlay.append($("<div class='overlay-background'></div>"));
+    this.$overlayContainer = $("<div class='overlay-container'></div>");
+    $overlay.append(this.$overlayContainer);
+
+    return $overlay;
+  }
+
+  onLangMenuChoice(code) {
+    this.closeOverlay();
+    this.setLang(code);
+    return false;
+  }
+
+  renderLangMenu() {
+    const $menu = $("<ul class='menu-lang'></ul>");
+
+    for (const langCode of this.config.langMenuItems) {
+      const langInfo = languages.getLanguageInfo(langCode);
+      if (langInfo) {
+        const $item = $('<li></li>');
+        const $link = $("<a href='#'></a>");
+        $link.text(langInfo.nativeName);
+        $link.on('click', this.onLangMenuChoice.bind(this, langCode));
+        $item.append($link);
+        $menu.append($item);
+      }
+    }
+
+    return $menu;
+  }
+
   resizeTitle() {
     if (this.$logoText) {
       const maxWidth = window.innerWidth * 0.9;
@@ -331,8 +406,9 @@ export default class AppLauncher {
     const view = $("<div class='appLauncher'></div>");
     view.append(this.renderLogo());
     view.append(this.renderMainMenu());
-    view.append(this.renderAppPane());
+    view.append($('<div class="appPane"></div>'));
     view.append(this.renderAppContainer());
+    view.append(this.renderOverlayContainer());
     view.append(this.renderUtilBar());
     view.append(this.$inputMask);
 

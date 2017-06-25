@@ -17,6 +17,12 @@ $large-line-height: 25px;
   line-height: $base-line-height;
 }
 
+@mixin largeText {
+  @include FiraSansCondensed;
+  font-size: 3vh;
+  line-height: $base-line-height;
+}
+
 @mixin largeHeading {
   font-size: 5vh;
   line-height: 5vh;

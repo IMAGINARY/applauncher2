@@ -17,3 +17,10 @@ apps:
   - apps/cindyjs/image-spiral
   - apps/cindyjs/tree
 infoApp: apps/cindyjs/info
+langMenuShow: yes
+langMenuItems:
+  - en
+  - de
+  - es
+  - ru
+  - zh

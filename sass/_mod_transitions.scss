@@ -38,6 +38,28 @@ body {
   transform: scale(0);
 }
 
+.util-button-lang {
+  transition: opacity 0.5s, visibility 0s linear 0.5s;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.util-button-info {
+  transition: opacity 0.5s, visibility 0s linear;
+}
+
+.overlay {
+  max-height: 0;
+  .overlay-background {
+    transition: opacity 0.5s $tr-open-app-len;
+    opacity: 0;
+  }
+  .overlay-container {
+    transition: opacity 0.5s $tr-open-app-len;
+    opacity: 0;
+  }
+}
+
 body.mode-menu {
   .appPane {
     max-height: 0;
@@ -51,6 +73,12 @@ body.mode-menu {
     .logo-text-wrapper {
       transform: scale(1);
     }
+  }
+
+  .util-button-lang {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s, visibility 0s linear 0s;
   }
 }
 
@@ -109,5 +137,22 @@ body.mode-menu {
         }
       }
     }
+  }
+}
+
+body.overlay-visible {
+  .overlay {
+    max-height: 80vh;
+    .overlay-background {
+      opacity: 1;
+    }
+    .overlay-container {
+      opacity: 1;
+    }
+  }
+
+  .util-button-info {
+    opacity: 0;
+    visibility: hidden;
   }
 }

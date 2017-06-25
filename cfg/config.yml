@@ -44,3 +44,30 @@ apps:
 # "about" or "credits" app.
 #
 infoApp: https://imaginary.github.io/cindyjs-apps/info
+
+#
+# Show language switcher menu (true/false)
+#
+# NOTE: It's not always a good idea to enable a language switcher. It will make
+# it more difficult for people coming across the station and people watching over
+# the user's shoulder to understand what's going on and they might just walk
+# away or waste time finding how to switch languages instead of playing with our
+# software. Enable ONLY if needed for the exhibition.
+#
+# IMPORTANT: If you enable the language menu choose which languages to show
+# wisely! Select only those appropriate to the exhibition and avoid showing
+# more than one local variant of the same language.
+# Also only enable languages for which translations are available.
+#
+langMenuShow: true
+
+#
+# Indicate which languages to show if the language switcher menu is shown
+# (use ISO 639-1 language codes)
+#
+langMenuItems:
+  - en
+  - de
+  - es
+  - ru
+  - zh
