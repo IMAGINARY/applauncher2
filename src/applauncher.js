@@ -3,22 +3,35 @@ import BrowserHelper from './browser-helper';
 
 const Promise = require('bluebird');
 const superagent = require('superagent');
+const yaml = require('js-yaml');
+
+const languages = require('languages');
 
 export default class AppLauncher {
 
   constructor() {
+    this.config = {};
     this.lang = 'en';
+    this.title = 'IMAGINARY';
+    this.logo = '';
     this.apps = [];
     this.appContainer = null;
     this.runningApp = null;
     this.infoApp = null;
+    this.$body = null;
     this.$inputMask = $('<div class="inputmask"></div>');
     this.$titlePane = $('<div class="titlePane"></div>');
+    this.$logoText = null;
+    this.$overlayContainer = null;
+    this.overlayVisible = false;
   }
 
   init() {
+    this.$body = $('body');
+    this.$body.addClass('lock-position');
     return this.readConfig()
       .then((config) => {
+        this.config = config;
         const tasks = [];
         tasks.push(this.loadApps(config.apps));
         if (config.infoApp) {
@@ -31,19 +44,36 @@ export default class AppLauncher {
         if (qs.lang) {
           this.lang = qs.lang;
         }
+        this.setTitle();
         this.setMenuMode();
+        this.initResizeHandler();
         this.enableUserInput();
       });
+  }
+
+  initResizeHandler() {
+    // Timeout for throttled resize
+    let resizeTimeout;
+
+    window.addEventListener('resize', () => {
+      // ignore resize events as long as an actualResizeHandler execution is in the queue
+      if (!resizeTimeout) {
+        resizeTimeout = setTimeout(() => {
+          resizeTimeout = null;
+          this.onResize();
+          // The actualResizeHandler will execute at a rate of 15fps
+        }, 66);
+      }
+    });
   }
 
   readConfig() {
     console.log('Reading config');
     return new Promise((accept, reject) => {
       superagent
-        .get('cfg/config.json')
-        .set('Accept', 'json')
+        .get('cfg/config.yml')
         .then((response) => {
-          const config = response.body;
+          const config = yaml.safeLoad(response.text);
           if (config.lang) {
             this.lang = config.lang;
           }
@@ -96,10 +126,22 @@ export default class AppLauncher {
       });
   }
 
+  setLang(langCode) {
+    this.lang = langCode;
+    this.setTitle();
+    $('.logo').replaceWith(this.renderLogo());
+    $('.menu-main').replaceWith(this.renderMainMenu());
+    this.resizeTitle();
+  }
+
   onLogoClicked() {
     this.closeApp();
     this.setMenuMode();
     return false;
+  }
+
+  onLangButton() {
+    this.showOverlay(this.renderLangMenu());
   }
 
   onInfoButton() {
@@ -111,8 +153,12 @@ export default class AppLauncher {
   }
 
   onCloseButton() {
-    this.closeApp();
-    this.setMenuMode();
+    if (this.overlayVisible) {
+      this.closeOverlay();
+    } else {
+      this.closeApp();
+      this.setMenuMode();
+    }
     return false;
   }
 
@@ -143,25 +189,55 @@ export default class AppLauncher {
   }
 
   clearMode() {
-    $('body').removeClass((index, className) => (className.match(/(^|\s)mode-\S+/g) || []).join(' '));
+    this.$body.removeClass((index, className) => (className.match(/(^|\s)mode-\S+/g) || []).join(' '));
+  }
+
+  setTitle() {
+    if (typeof this.config.title === 'string') {
+      this.title = this.config.title;
+    } else if (typeof this.config.title === 'object') {
+      if (this.config.title[this.lang] !== undefined) {
+        this.title = this.config.title[this.lang];
+      } else {
+        // Defaults to english
+        this.title = this.config.title.en;
+      }
+    }
+    document.title = this.title;
   }
 
   setMenuMode() {
     this.clearMode();
-    $('body').addClass('mode-menu');
+    this.$body.addClass('mode-menu');
   }
 
   setAppMode() {
     this.clearMode();
-    $('body').addClass('mode-app');
+    this.$body.addClass('mode-app');
   }
 
   setAppVisible(visibility) {
     if (visibility) {
-      $('body').addClass('app-visible');
+      this.$body.addClass('app-visible');
     } else {
-      $('body').removeClass('app-visible');
+      this.$body.removeClass('app-visible');
     }
+  }
+
+  showOverlay(content) {
+    this.overlayVisible = true;
+    this.setAppMode();
+    this.$body.addClass('overlay-visible');
+    this.$overlayContainer.append(content);
+  }
+
+  closeOverlay() {
+    this.$body.removeClass('overlay-visible');
+    this.$overlayContainer.empty();
+    if (this.runningApp === null) {
+      this.setMenuMode();
+    }
+    this.overlayVisible = false;
   }
 
   displayTitle(aTitle) {
@@ -183,6 +259,14 @@ export default class AppLauncher {
 
   renderUtilBar() {
     const utilBar = $('<div class="util-bar"></div>');
+
+    if (this.config.langMenuShow) {
+      utilBar.append(
+        $("<a class='util-button util-button-lang' href='#'><span class='fa fa-language'></span></a>")
+          .on('click', this.onLangButton.bind(this))
+      );
+    }
+
     // Info button
     if (this.infoApp) {
       utilBar.append(
@@ -231,22 +315,101 @@ export default class AppLauncher {
     return item;
   }
 
-  renderAppPane() {
-    return $('<div class="appPane"></div>');
-  }
-
   renderAppContainer() {
     const appContainer = $('<div class="appContainer"></div>');
     this.appContainer = appContainer[0];
     return appContainer;
   }
 
+  renderLogo() {
+    const $logo = $("<a href='#' class='logo'></a>")
+      .on('click', this.onLogoClicked.bind(this));
+
+    if (this.config.logo !== undefined) {
+      if (typeof this.config.logo === 'string') {
+        this.logo = this.config.logo;
+      } else if (typeof this.config.logo === 'object') {
+        if (this.config.logo[this.lang] !== undefined) {
+          this.logo = this.config.logo[this.lang];
+        } else if (this.config.logo.default !== undefined) {
+          this.logo = this.config.logo.default;
+        }
+      }
+    }
+
+    if (this.logo !== '') {
+      $logo.css('background-image', `url(${this.logo})`);
+    } else {
+      // If there is no logo use the title
+      this.$logoText = $("<div class='logo-text'></div>").text(this.title);
+      $logo.append($("<div class='logo-text-wrapper'></div>").append(this.$logoText));
+    }
+
+    return $logo;
+  }
+
+  renderOverlayContainer() {
+    const $overlay = $("<div class='overlay'></div>");
+    $overlay.append($("<div class='overlay-background'></div>"));
+    this.$overlayContainer = $("<div class='overlay-container'></div>");
+    $overlay.append(this.$overlayContainer);
+
+    return $overlay;
+  }
+
+  onLangMenuChoice(code) {
+    this.closeOverlay();
+    this.setLang(code);
+    return false;
+  }
+
+  renderLangMenu() {
+    const $menu = $("<ul class='menu-lang'></ul>");
+
+    for (const langCode of this.config.langMenuItems) {
+      const langInfo = languages.getLanguageInfo(langCode);
+      if (langInfo) {
+        const $item = $('<li></li>');
+        const $link = $("<a href='#'></a>");
+        $link.text(langInfo.nativeName);
+        $link.on('click', this.onLangMenuChoice.bind(this, langCode));
+        $item.append($link);
+        $menu.append($item);
+      }
+    }
+
+    return $menu;
+  }
+
+  resizeTitle() {
+    if (this.$logoText) {
+      const maxWidth = window.innerWidth * 0.9;
+      const maxHeight = window.innerHeight * 0.15;
+      const newScale = Math.min(
+        maxHeight / this.$logoText.outerHeight(),
+        maxWidth / this.$logoText.outerWidth(),
+        1
+      );
+
+      this.$logoText.css('transform', `scale(${newScale})`);
+    }
+  }
+
+  onResize() {
+    this.resizeTitle();
+  }
+
+  onReady() {
+    this.resizeTitle();
+  }
+
   render() {
     const view = $("<div class='appLauncher'></div>");
-    view.append($("<a href='#' class='logo'></a>").on('click', this.onLogoClicked.bind(this)));
+    view.append(this.renderLogo());
     view.append(this.renderMainMenu());
-    view.append(this.renderAppPane());
+    view.append($('<div class="appPane"></div>'));
     view.append(this.renderAppContainer());
+    view.append(this.renderOverlayContainer());
     view.append(this.renderUtilBar());
     view.append(this.$inputMask);
 

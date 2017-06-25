@@ -117,6 +117,234 @@ html {
   font-weight: 900;
   src: url("../fonts/Fira_Sans_Condensed/FiraSansCondensed-BlackItalic.ttf") format("truetype"); }
 
+@font-face {
+  font-family: "josefin-sans";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../fonts/Josefin_Sans/JosefinSans-Bold.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "josefin-sans";
+  font-style: italic;
+  font-weight: 700;
+  src: url("../fonts/Josefin_Sans/JosefinSans-BoldItalic.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "josefin-sans";
+  font-style: normal;
+  font-weight: 600;
+  src: url("../fonts/Josefin_Sans/JosefinSans-SemiBold.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "josefin-sans";
+  font-style: italic;
+  font-weight: 600;
+  src: url("../fonts/Josefin_Sans/JosefinSans-SemiBoldItalic.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "josefin-sans";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/Josefin_Sans/JosefinSans-Regular.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "josefin-sans";
+  font-style: italic;
+  font-weight: 400;
+  src: url("../fonts/Josefin_Sans/JosefinSans-Italic.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "josefin-sans";
+  font-style: normal;
+  font-weight: 300;
+  src: url("../fonts/Josefin_Sans/JosefinSans-Light.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "josefin-sans";
+  font-style: italic;
+  font-weight: 300;
+  src: url("../fonts/Josefin_Sans/JosefinSans-LightItalic.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "josefin-sans";
+  font-style: normal;
+  font-weight: 100;
+  src: url("../fonts/Josefin_Sans/JosefinSans-Thin.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "josefin-sans";
+  font-style: italic;
+  font-weight: 100;
+  src: url("../fonts/Josefin_Sans/JosefinSans-ThinItalic.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "lato";
+  font-style: normal;
+  font-weight: 900;
+  src: url("../fonts/Lato/Lato-Black.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "lato";
+  font-style: italic;
+  font-weight: 900;
+  src: url("../fonts/Lato/Lato-BlackItalic.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "lato";
+  font-style: normal;
+  font-weight: 600;
+  src: url("../fonts/Lato/Lato-Bold.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "lato";
+  font-style: italic;
+  font-weight: 600;
+  src: url("../fonts/Lato/Lato-BoldItalic.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "lato";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/Lato/Lato-Regular.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "lato";
+  font-style: italic;
+  font-weight: 400;
+  src: url("../fonts/Lato/Lato-Italic.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "lato";
+  font-style: normal;
+  font-weight: 300;
+  src: url("../fonts/Lato/Lato-Light.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "lato";
+  font-style: italic;
+  font-weight: 300;
+  src: url("../fonts/Lato/Lato-LightItalic.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "lato";
+  font-style: normal;
+  font-weight: 100;
+  src: url("../fonts/Lato/Lato-Hairline.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "lato";
+  font-style: italic;
+  font-weight: 100;
+  src: url("../fonts/Lato/Lato-HairlineItalic.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "raleway";
+  font-style: normal;
+  font-weight: 900;
+  src: url("../fonts/Raleway/Raleway-Black.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "raleway";
+  font-style: italic;
+  font-weight: 900;
+  src: url("../fonts/Raleway/Raleway-BlackItalic.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "raleway";
+  font-style: normal;
+  font-weight: 800;
+  src: url("../fonts/Raleway/Raleway-ExtraBold.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "raleway";
+  font-style: italic;
+  font-weight: 800;
+  src: url("../fonts/Raleway/Raleway-ExtraBoldItalic.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "raleway";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../fonts/Raleway/Raleway-Bold.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "raleway";
+  font-style: italic;
+  font-weight: 700;
+  src: url("../fonts/Raleway/Raleway-BoldItalic.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "raleway";
+  font-style: normal;
+  font-weight: 600;
+  src: url("../fonts/Raleway/Raleway-SemiBold.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "raleway";
+  font-style: italic;
+  font-weight: 600;
+  src: url("../fonts/Raleway/Raleway-SemiBoldItalic.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "raleway";
+  font-style: normal;
+  font-weight: 500;
+  src: url("../fonts/Raleway/Raleway-Medium.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "raleway";
+  font-style: italic;
+  font-weight: 500;
+  src: url("../fonts/Raleway/Raleway-MediumItalic.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "raleway";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/Raleway/Raleway-Regular.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "raleway";
+  font-style: italic;
+  font-weight: 400;
+  src: url("../fonts/Raleway/Raleway-Italic.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "raleway";
+  font-style: normal;
+  font-weight: 300;
+  src: url("../fonts/Raleway/Raleway-Light.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "raleway";
+  font-style: italic;
+  font-weight: 300;
+  src: url("../fonts/Raleway/Raleway-LightItalic.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "raleway";
+  font-style: normal;
+  font-weight: 200;
+  src: url("../fonts/Raleway/Raleway-ExtraLight.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "raleway";
+  font-style: italic;
+  font-weight: 200;
+  src: url("../fonts/Raleway/Raleway-ExtraLightItalic.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "raleway";
+  font-style: normal;
+  font-weight: 100;
+  src: url("../fonts/Raleway/Raleway-Thin.ttf") format("truetype"); }
+
+@font-face {
+  font-family: "raleway";
+  font-style: italic;
+  font-weight: 100;
+  src: url("../fonts/Raleway/Raleway-ThinItalic.ttf") format("truetype"); }
+
 /*!
  *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
@@ -2997,18 +3225,29 @@ body {
   top: 11.5vh;
   left: 5%;
   display: block;
-  text-indent: -100em;
-  white-space: nowrap;
-  overflow: hidden;
-  background-repeat: no-repeat;
-  background-image: url("../img/lg_imaginary_white.png");
-  width: 3320px;
-  height: 419px;
   background-size: contain;
-  background-position: center top;
+  background-position: center center;
+  background-repeat: no-repeat;
   width: 90%;
   height: 15vh;
-  margin: 0 auto; }
+  margin: 0 auto;
+  text-decoration: none;
+  text-align: center; }
+  .logo .logo-text-wrapper {
+    width: 100%;
+    height: 100%; }
+  .logo .logo-text {
+    display: inline-block;
+    font-family: 'lato', 'sans-serif';
+    font-size: 15vh;
+    line-height: 15vh;
+    font-weight: 500;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    transform-origin: left top; }
 
 .info-open .logo {
   top: 6vh;
@@ -3088,6 +3327,29 @@ body {
   height: 80vh;
   bottom: 10vh; }
 
+.overlay {
+  position: absolute;
+  z-index: 2000;
+  left: 0;
+  bottom: 10vh;
+  padding: 0;
+  margin: 0 auto;
+  width: 100%;
+  height: 80vh; }
+  .overlay .overlay-background {
+    background-color: rgba(0, 0, 0, 0.93);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; }
+  .overlay .overlay-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; }
+
 .util-bar {
   position: absolute;
   z-index: 500;
@@ -3151,6 +3413,12 @@ body {
 .logo {
   transition-duration: 0.5s;
   transition-property: top, height; }
+  .logo .logo-text-wrapper {
+    transition-duration: 0.5s;
+    transition-property: transform; }
+  .logo .logo-text {
+    transition-duration: 0.5s;
+    transition-property: line-height; }
 
 .appPane {
   transition-duration: 0.33333s;
@@ -3169,6 +3437,23 @@ body {
   transition-duration: 0.25s;
   transform: scale(0); }
 
+.util-button-lang {
+  transition: opacity 0.5s, visibility 0s linear 0.5s;
+  opacity: 0;
+  visibility: hidden; }
+
+.util-button-info {
+  transition: opacity 0.5s, visibility 0s linear; }
+
+.overlay {
+  max-height: 0; }
+  .overlay .overlay-background {
+    transition: opacity 0.5s 0.5s;
+    opacity: 0; }
+  .overlay .overlay-container {
+    transition: opacity 0.5s 0.5s;
+    opacity: 0; }
+
 body.mode-menu .appPane {
   max-height: 0;
   bottom: 50vh;
@@ -3176,11 +3461,23 @@ body.mode-menu .appPane {
   transition-property: opacity;
   transition-delay: 0s; }
 
+body.mode-menu .logo .logo-text-wrapper {
+  transform: scale(1); }
+
+body.mode-menu .util-button-lang {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.5s, visibility 0s linear 0s; }
+
 body.mode-app {
   background-color: #121a1e; }
   body.mode-app .logo {
     top: 2.5vh;
     height: 5vh; }
+    body.mode-app .logo .logo-text-wrapper {
+      transform: scale(0.4); }
+    body.mode-app .logo .logo-text {
+      line-height: 4.5vh; }
   body.mode-app .menu-main {
     opacity: 0; }
   body.mode-app .menu-main-button {
@@ -3253,5 +3550,34 @@ body.mode-menu .menu-main-row:nth-child(3) .menu-main-button:nth-child(5) {
 
 body.mode-menu .menu-main-row:nth-child(3) .menu-main-button:nth-child(6) {
   transition-delay: 0.9s; }
+
+body.overlay-visible .overlay {
+  max-height: 80vh; }
+  body.overlay-visible .overlay .overlay-background {
+    opacity: 1; }
+  body.overlay-visible .overlay .overlay-container {
+    opacity: 1; }
+
+body.overlay-visible .util-button-info {
+  opacity: 0;
+  visibility: hidden; }
+
+ul.menu-lang {
+  margin: 0 auto;
+  position: absolute;
+  bottom: 5vh;
+  width: 100%; }
+  ul.menu-lang li {
+    display: block;
+    margin: 0 auto;
+    text-align: center; }
+    ul.menu-lang li a {
+      display: inline-block;
+      padding: 1.5vh;
+      font-family: 'fira-sans-condensed', 'sans-serif';
+      font-size: 3vh;
+      line-height: 1.2em;
+      text-decoration: none;
+      color: #fff; }
 
 /*# sourceMappingURL=default.css.map */
