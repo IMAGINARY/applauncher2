@@ -11,6 +11,8 @@ lang: en
 title:
   en: Math to Touch
   es: Matemática para tocar
+  ru: Математика на ощупь
+  ro: Matematica de atins
 
 #
 # Logo image to show on top of the menu.
@@ -35,6 +37,11 @@ title:
 # app.json manifest file is located.
 #
 apps:
+  - https://imaginary.github.io/cindyjs-apps/euclidian-rhythm
+  - https://imaginary.github.io/cindyjs-apps/mozart-dice
+  - https://imaginary.github.io/cindyjs-apps/pachelbel-canon
+  - https://imaginary.github.io/cindyjs-apps/sequenzer
+  - https://imaginary.github.io/cindyjs-apps/whitney
   - https://imaginary.github.io/cindyjs-apps/iornament
   - https://imaginary.github.io/cindyjs-apps/doppelpendel
   - https://imaginary.github.io/cindyjs-apps/fish
@@ -77,5 +84,6 @@ langMenuItems:
   - en
   - de
   - es
+  - ro
   - ru
   - zh
