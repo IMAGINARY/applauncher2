@@ -71,7 +71,7 @@ export default class AppLauncher {
     console.log('Reading config');
     return new Promise((accept, reject) => {
       superagent
-        .get('cfg/config.yml')
+        .get(`cfg/config.yml?cache=${Date.now()}`)
         .then((response) => {
           const config = yaml.safeLoad(response.text);
           if (config.lang) {
@@ -89,7 +89,7 @@ export default class AppLauncher {
   }
 
   loadAppConfig(appRoot) {
-    return superagent.get(`${appRoot}/app.json`)
+    return superagent.get(`${appRoot}/app.json?cache=${Date.now()}`)
       .set('Accept', 'json')
       .then((response) => {
         const appConfig = response.body;

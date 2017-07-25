@@ -11748,7 +11748,7 @@ var AppLauncher = function () {
 
       console.log('Reading config');
       return new Promise(function (accept, reject) {
-        superagent.get('cfg/config.yml').then(function (response) {
+        superagent.get('cfg/config.yml?cache=' + Date.now()).then(function (response) {
           var config = yaml.safeLoad(response.text);
           if (config.lang) {
             _this3.lang = config.lang;
@@ -11765,7 +11765,7 @@ var AppLauncher = function () {
   }, {
     key: 'loadAppConfig',
     value: function loadAppConfig(appRoot) {
-      return superagent.get(appRoot + '/app.json').set('Accept', 'json').then(function (response) {
+      return superagent.get(appRoot + '/app.json?cache=' + Date.now()).set('Accept', 'json').then(function (response) {
         var appConfig = response.body;
         appConfig.root = appRoot;
         return appConfig;
