@@ -3249,6 +3249,9 @@ body {
     text-decoration: none;
     transform-origin: left top; }
 
+.appLauncher-3-rows .logo {
+  top: 5vh; }
+
 .info-open .logo {
   top: 6vh;
   height: 8vh; }
@@ -3271,13 +3274,7 @@ body {
   text-align: center;
   font-size: 0; }
   .menu-main-row .menu-main-button {
-    display: inline-block;
-    width: 16.66667%; }
-
-.menu-main-2-rows {
-  height: 50vh; }
-  .menu-main-2-rows .menu-main-row {
-    height: 25vh; }
+    display: inline-block; }
 
 .menu-main-button {
   display: block;
@@ -3289,21 +3286,58 @@ body {
     transition-duration: 0s; }
   .menu-main-button .icon {
     display: block;
+    height: auto;
     width: auto;
-    height: 16vmin;
+    max-height: 100%;
+    max-width: 100%;
     margin: 0 auto;
     transition-duration: 0.5s;
-    transition-property: max-width; }
+    transition-property: max-width;
+    padding-bottom: 6.5vh; }
   .menu-main-button .name {
-    height: 8vh;
+    height: 6vh;
     font-size: 2.5vmin;
     line-height: 3vmin;
     text-transform: uppercase;
-    margin-top: 1vh;
-    padding: 1vh 0;
+    margin-top: -6vh;
+    padding: 0 0;
     overflow: hidden;
     transition-duration: 0.5s;
     transition-property: font-size, line-height; }
+
+.menu-main-row-1 .menu-main-button {
+  width: 33.33333%; }
+
+.menu-main-row-2 .menu-main-button {
+  width: 33.33333%; }
+
+.menu-main-row-3 .menu-main-button {
+  width: 33.33333%; }
+
+.menu-main-row-4 .menu-main-button {
+  width: 25%; }
+
+.menu-main-row-5 .menu-main-button {
+  width: 20%; }
+
+.menu-main-row-6 .menu-main-button {
+  width: 16.66667%; }
+
+.appLauncher-1-rows .menu-main {
+  height: 50vh; }
+  .appLauncher-1-rows .menu-main .menu-main-row {
+    height: 50vh;
+    padding-top: 6vh; }
+
+.appLauncher-2-rows .menu-main {
+  height: 50vh; }
+  .appLauncher-2-rows .menu-main .menu-main-row {
+    height: 25vh; }
+
+.appLauncher-3-rows .menu-main {
+  height: 60vh; }
+  .appLauncher-3-rows .menu-main .menu-main-row {
+    height: 20vh; }
 
 .appPane {
   background-color: #000;

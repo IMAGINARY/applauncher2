@@ -24,6 +24,7 @@ export default class AppLauncher {
     this.$logoText = null;
     this.$overlayContainer = null;
     this.overlayVisible = false;
+    this.MAX_ITEMS_PER_ROW = 6;
   }
 
   init() {
@@ -286,20 +287,63 @@ export default class AppLauncher {
     return utilBar;
   }
 
+  itemsPerRow6(itemCount) {
+    const layouts = {
+      1: [1],
+      2: [2],
+      3: [3],
+      4: [4],
+      5: [5],
+      6: [6],
+      7: [4, 3],
+      8: [4, 4],
+      9: [5, 4],
+      10: [5, 5],
+      11: [6, 5],
+      12: [6, 6],
+      13: [4, 5, 4],
+      14: [5, 4, 5],
+      15: [5, 5, 5],
+      16: [5, 6, 5],
+      17: [6, 5, 6],
+      18: [6, 6, 6],
+    };
+
+    return layouts[itemCount];
+  }
+
+  itemsPerRow(itemCount, maxItemsPerRow) {
+    const itemsPerRow = [];
+
+    // Hardwired handling
+    if (itemCount <= 18 && maxItemsPerRow == 6) {
+      return this.itemsPerRow6(itemCount);
+    }
+
+    const rowCount = Math.ceil(itemCount / maxItemsPerRow);
+    let remainingItems = this.apps.length;
+    for (let i = 0; i !== rowCount; i += 1) {
+      const itemsInRow = Math.ceil(remainingItems / (rowCount - i));
+      itemsPerRow.push(itemsInRow);
+      remainingItems -= itemsInRow;
+    }
+
+    return itemsPerRow;
+  }
+
   renderMainMenu() {
     const mainMenu = $('<div class="menu-main"></div>');
-    const rowCount = Math.ceil(this.apps.length / 6);
-    mainMenu.addClass(`menu-main-${rowCount}-rows`);
+    const itemsPerRow = this.itemsPerRow(this.apps.length, this.MAX_ITEMS_PER_ROW);
 
-    let currRow = null;
-    for (let i = 0; i !== this.apps.length; i += 1) {
-      if (i % 6 === 0) {
-        const rowItems = this.apps.length - i >= 6 ? 6 : this.apps.length - i;
-        currRow = $('<div class="menu-main-row"></div>');
-        currRow.addClass(`menu-main-row-${rowItems}`);
-        mainMenu.append(currRow);
+    let currApp = 0;
+    for (let i = 0; i !== itemsPerRow.length; i += 1) {
+      const newRow = $('<div class="menu-main-row"></div>');
+      newRow.addClass(`menu-main-row-${Math.max(...itemsPerRow)}`);
+      for (let j = 0; j !== itemsPerRow[i]; j += 1) {
+        newRow.append(this.renderMainMenuItem(this.apps[currApp]));
+        currApp += 1;
       }
-      currRow.append(this.renderMainMenuItem(this.apps[i]));
+      mainMenu.append(newRow);
     }
 
     return mainMenu;
@@ -405,6 +449,9 @@ export default class AppLauncher {
 
   render() {
     const view = $("<div class='appLauncher'></div>");
+    const rowCount = Math.ceil(this.apps.length / this.MAX_ITEMS_PER_ROW);
+    view.addClass(`appLauncher-${rowCount}-rows`);
+
     view.append(this.renderLogo());
     view.append(this.renderMainMenu());
     view.append($('<div class="appPane"></div>'));
