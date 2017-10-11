@@ -13,6 +13,7 @@ title:
   es: Matemática para tocar
   ru: Математика на ощупь
   ro: Matematica de atins
+  it: Math to Touch
 
 #
 # Logo image to show on top of the menu.
@@ -84,6 +85,7 @@ langMenuItems:
   - en
   - de
   - es
+  - it
   - ro
   - ru
   - zh
