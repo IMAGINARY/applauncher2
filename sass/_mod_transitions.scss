@@ -6,7 +6,8 @@ body {
 
 .logo {
   transition-duration: $tr-open-app-len;
-  transition-property: top, height;
+  transition-property: top, height, opacity;
+  opacity: 1;
   .logo-text-wrapper {
     transition-duration: $tr-open-app-len;
     transition-property: transform;
@@ -19,7 +20,7 @@ body {
 
 .appPane {
   transition-duration: $tr-open-app-len * 2 / 3;
-  transition-property: max-height, bottom;
+  transition-property: max-height, top, bottom;
   transition-delay: $tr-open-app-len / 3;
 }
 
@@ -63,6 +64,7 @@ body {
 body.mode-menu {
   .appPane {
     max-height: 0;
+    top: 50vh;
     bottom: 50vh;
     opacity: 0;
     transition-property: opacity;
@@ -116,6 +118,37 @@ body.mode-app {
 
   .util-button-close {
     margin-top: 0;
+  }
+}
+
+body.mode-blank {
+  background-color: $color-black;
+
+  .logo {
+    top: 2.5vh;
+    height: 5vh;
+    opacity: 0;
+    .logo-text-wrapper {
+      transform: scale(0.4);
+    }
+    .logo-text {
+      line-height: 4.5vh;
+    }
+  }
+
+  .menu-main {
+    opacity: 0;
+  }
+
+  .appPane {
+    top: 0vh;
+    bottom: 0vh;
+    max-height: 100vh;
+    opacity: 1;
+  }
+
+  .appContainer {
+    display: block;
   }
 }
 

@@ -1,4 +1,5 @@
-import Application from './application';
+import IframeApplication from './iframe-application';
+import ExecutableApplication from './executable-application';
 import BrowserHelper from './browser-helper';
 
 const Promise = require('bluebird');
@@ -95,8 +96,20 @@ export default class AppLauncher {
       .then((response) => {
         const appConfig = response.body;
         appConfig.root = appRoot;
+        if (appConfig.type === undefined) {
+          appConfig.type = 'iframe';
+        }
         return appConfig;
       });
+  }
+
+  static createApplication(appConfig) {
+    if (appConfig.type === 'iframe') {
+      return new IframeApplication(appConfig);
+    } else if (appConfig.type === 'executable') {
+      return new ExecutableApplication(appConfig);
+    }
+    throw new Error(`Unknown application type : ${appConfig.type}`);
   }
 
   loadApps(appList) {
@@ -109,7 +122,7 @@ export default class AppLauncher {
       appLoaders.push(
         this.loadAppConfig(appRoot)
           .then((appConfig) => {
-            this.apps[appIndex] = (new Application(appConfig));
+            this.apps[appIndex] = (AppLauncher.createApplication(appConfig));
           }
         )
       );
@@ -123,7 +136,7 @@ export default class AppLauncher {
     console.log('Loading info app');
     return this.loadAppConfig(appRoot)
       .then((appConfig) => {
-        this.infoApp = new Application(appConfig);
+        this.infoApp = new IframeApplication(appConfig);
       });
   }
 
@@ -165,16 +178,26 @@ export default class AppLauncher {
 
   onAppButton(app) {
     this.runApp(app);
-    this.displayTitle(app.getName(this.lang));
     return false;
   }
 
   runApp(app) {
     this.disableUserInput();
     this.closeApp();
-    this.setAppMode();
+    if (app.type === 'iframe') {
+      this.setAppMode();
+      if (app !== this.infoApp) {
+        this.displayTitle(app.getName(this.lang));
+      }
+    } else {
+      this.setBlankMode();
+    }
     // Delay for fluid animation
     window.setTimeout(() => {
+      app.once('close', () => {
+        this.closeApp();
+        this.setMenuMode();
+      });
       app.run(this.appContainer, this.lang);
       this.setAppVisible(true);
       this.runningApp = app;
@@ -215,6 +238,11 @@ export default class AppLauncher {
   setAppMode() {
     this.clearMode();
     this.$body.addClass('mode-app');
+  }
+
+  setBlankMode() {
+    this.clearMode();
+    this.$body.addClass('mode-blank');
   }
 
   setAppVisible(visibility) {

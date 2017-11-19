@@ -1,21 +1,11 @@
 # IMAGINARY AppLauncher Mark II
 
-A graphic menu for launching applications based on HTML technologies. This is a rewrite of the 
+A graphic menu for launching applications. Based on HTML technologies! This is a rewrite of the 
 [IMAGINARY Application launcher](https://github.com/IMAGINARY/applauncher).
 
-## Philosophy
-
-Why a rewrite? As of May 2017 we need a launcher to launch HTML apps in an IFRAME (or similar)
-that supports a large number of applications and is translatable. The applauncher currently 
-supports 4-5 "real" (executable) applications, is not configurable or translatable, and the 
-project depends on electron. It's also programmed in old fashioned JS instead of ES6/ES2015 
-or some other modern (hipster) version.
-
-... The idea was for applauncher to eventually be configurable and translatable, but visually it's
-too tied to the small number of apps it launched, so there wouldn't be too much code reuse. It's
-easier now to do a whole new launcher with the goal of eventually fully replacing the applauncher
-(by adding the ability to launch programs instead of HTML apps)... or later combining both in a 
-perfect AppLauncher Mark III.
+This is a complete rewrite of the first AppLauncher that is fully configurable, translatable, 
+supports from 1 to 18 applications that can be either HTML apps that run in an iframe or regular 
+executable apps.
 
 ## Goals
 
@@ -75,18 +65,40 @@ name in english (`en`) should always be provided.
 future. A single string can be specified or an object where each key is a language code and it maps to a
 translated description. A default description in english (`en`) should always be provided. 
 
-- **root**: (Optional) Path of the root directory where the application's files are installed. The icon file and the `main`
-file should be placed in this directory.
+- **type**: (Optional, default: 'iframe') Type of application. Either 'iframe' for launching a web application in
+an iframe or 'executable' for launching an external process. 
  
-- **main**: File that should be opened to launch the application. (e.g. `index.html`) It can be a path or an
-absolute url. If `root` was specified this value will be interpreted relative to that.
+Extra options can be set depending on the **type** of application.
+
+#### iframe apps
+
+iframe apps can have the following keys:
+
+- **main**: File that should be opened in the iframe to launch the application. (e.g. `index.html`) 
+It can be a path or an absolute url.
 
 - **width**, **height**: (Optional) Native resolution of the app. If specified the app will be run at this 
 resolution and zoomed (in or out) to fit into the window. If not specified the app will run at the resolution
 of the frame where it's launched (which might be very small, very large, or change during execution).
 
-## Compilation
+#### executable apps
 
+- **main**: Command to run. The process should stay alive until it's time for the menu to regain control.
+Note also that the program launched should provide the user for some mechanism to end the process and exit 
+back to the menu.
+
+- **args**: (Optional) An array containing the list of string arguments.
+
+- **cwd**: (Optional) Working directory for the command
+
+- **env**: (Optional) An object with key-value pairs to set as environment for the process. The appLauncher
+automatically loads the LANG environment variable with the language selected in the menu, but it can be overriden
+through this setting. 
+
+- **shell** (Optional, default: false) If `true` the command will be run in the default shell. 
+A different shell can also be specified as a string. If `false` the command is run without a shell.
+
+## Compilation
 
 This app is built using several compilable languages:
 
@@ -122,6 +134,10 @@ After it runs succesfuly you can compile as needed:
   ```
     gulp scripts:dev
   ```
+
+## Credits
+
+Designed and developed by Eric Londaits (eric.londaits@imaginary.org) for IMAGINARY.
 
 ## License
 

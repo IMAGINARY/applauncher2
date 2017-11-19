@@ -1,12 +1,19 @@
-export default class Application {
+const EventEmitter = require('events');
+
+export default class Application extends EventEmitter {
 
   constructor(config) {
+    super();
+
+    if (new.target === Application) {
+      throw new TypeError('Cannot construct Application instances directly');
+    }
+
     this.id = config.id;
+    this.type = config.type;
     this.root = config.root;
     this.version = config.version;
     this.main = config.main;
-    this.width = config.width;
-    this.height = config.height;
     this.name = config.name;
     this.description = config.description;
     console.log(`Create app ${this.id}`);
@@ -30,13 +37,11 @@ export default class Application {
     return `${this.root}/icons/icon.png`;
   }
 
-  run(container, lang = 'en') {
-    window.IMAGINARY.CindyViewer.create(
-      container,
-      `${this.root}/${this.main}`,
-      this.width ? this.width : null,
-      this.height ? this.height : null,
-      lang
-    );
+  close() {
+    this.emit('close');
   }
+
+  // run(container, lang = 'en') {
+  //
+  // }
 }

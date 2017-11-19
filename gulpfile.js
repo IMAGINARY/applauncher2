@@ -21,6 +21,11 @@ var write = require('fs').createWriteStream;
 var dependencies = [
 ];
 
+// This dependencies are always external
+var extDependencies = [
+  'electron', 'child_process'
+];
+
 // How many times the scripts task is fired
 var scriptsCount = 0;
 
@@ -55,6 +60,10 @@ function bundleApp(isProduction) {
       appBundler.external(dep);
     });
   }
+
+  extDependencies.forEach(function(dep){
+    appBundler.external(dep);
+  });
 
   appBundler
   // transform ES6 and JSX to ES5 with babelify
