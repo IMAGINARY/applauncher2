@@ -35,7 +35,8 @@ title:
 #
 # List of apps to load in the menu
 # Each app is specified by the path or URL to the app directory where the
-# app.json manifest file is located.
+# app.json manifest file is located. See the README.md file for information
+# on the app.json file format.
 #
 apps:
   - https://imaginary.github.io/cindyjs-apps/euclidian-rhythm
