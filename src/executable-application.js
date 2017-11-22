@@ -38,7 +38,7 @@ export default class ExecutableApplication extends Application {
           this.args,
           {
             cwd: this.cwd,
-            env: Object.assign({ LANG: lang }, this.env),
+            env: Object.assign(electron.remote.process.env, { LANG: lang }, this.env),
             shell: this.shell,
             stdio: ['ignore', electron.remote.process.stdout, electron.remote.process.stderr],
           }
