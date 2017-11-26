@@ -31,7 +31,10 @@ export default class AppLauncher {
   init() {
     this.$body = $('body');
     this.$body.addClass('lock-position');
-    return this.readConfig()
+    const validCfgName = /^[a-zA-Z0-9_\-\.]+$/;
+    const cfgName = validCfgName.test(BrowserHelper.getQueryString().cfg) ?
+      BrowserHelper.getQueryString().cfg : '';
+    return this.readConfig(cfgName)
       .then((config) => {
         this.config = config;
         const tasks = [];
@@ -70,11 +73,12 @@ export default class AppLauncher {
     });
   }
 
-  readConfig() {
-    console.log('Reading config');
+  readConfig(configName) {
+    console.log(`Reading config (${configName || 'default'})`);
     return new Promise((accept, reject) => {
+      const prefix = configName ? `${configName}.` : '';
       superagent
-        .get(`cfg/config.yml?cache=${Date.now()}`)
+        .get(`cfg/${prefix}config.yml?cache=${Date.now()}`)
         .then((response) => {
           const config = yaml.safeLoad(response.text);
           if (config.lang) {

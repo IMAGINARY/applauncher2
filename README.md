@@ -33,11 +33,16 @@ to configure this program then it's not the one you want.
 
 ## Configuration
 
-The configuration file is at cfg/config.yml. It is fully commented so it documents its own format. 
+The configuration file is at `cfg/config.yml`. It is fully commented so it documents its own format. 
 
 The default configuration provided is for demo purposes and offers a number of CindyJS applications found
 in the internet. A sample configuration that accesses the apps locally is also provided 
 (`sample-local-cindy.config.yml`).
+
+Multiple configurations can be created using the name `cfg/<prefix>.config.yml` where prefix is an identifier
+made of a combination of uppercase and lowercase ascii letters, digits, underscores or dashes (e.g. 
+`cfg/cindy.config.yml`). The active configuration can be set passing the config identifier through the `cfg` 
+query string parameter (e.g. `http://localhost/appLauncher/?cfg=cindy`).
 
 ## Applications
 
