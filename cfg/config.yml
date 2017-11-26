@@ -33,6 +33,13 @@ title:
 #   de: assets/img/lg_imaginary_white.png
 
 #
+# Name of the theme to use.
+# Available themes: default, blue, green.
+# See more info about defining new themes in the README.md file.
+#
+# theme: blue
+
+#
 # List of apps to load in the menu
 # Each app is specified by the path or URL to the app directory where the
 # app.json manifest file is located. See the README.md file for information

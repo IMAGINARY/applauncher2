@@ -98,6 +98,14 @@ through this setting.
 - **shell** (Optional, default: false) If `true` the command will be run in the default shell. 
 A different shell can also be specified as a string. If `false` the command is run without a shell.
 
+## Themes
+
+Themes allow overriding default CSS styles and images. Each theme has a directory inside `themes` where its
+`default.css` file and any extra assets are placed. If a theme is specified in the `config.yml` file its 
+`default.css` file will be loaded dynamically when the appLauncher starts.
+
+Note that the theme CSS files are precompiled from SASS files placed in `sass/themes/<theme name>`.
+
 ## Compilation
 
 This app is built using several compilable languages:

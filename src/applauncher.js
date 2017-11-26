@@ -35,6 +35,7 @@ export default class AppLauncher {
       .then((config) => {
         this.config = config;
         const tasks = [];
+        tasks.push(this.loadTheme(config.theme));
         tasks.push(this.loadApps(config.apps));
         if (config.infoApp) {
           tasks.push(this.loadInfoApp(config.infoApp));
@@ -101,6 +102,18 @@ export default class AppLauncher {
         }
         return appConfig;
       });
+  }
+
+  loadTheme(themeName) {
+    if (themeName !== undefined && themeName !== 'default') {
+      console.log(`Loading theme ${themeName}`);
+      const $themeCSSFile = $('<link></link>');
+      $themeCSSFile.attr('rel', 'stylesheet');
+      $themeCSSFile.attr('type', 'text/css');
+      $themeCSSFile.attr('href', `themes/${themeName}/default.css`);
+      $themeCSSFile.appendTo('head');
+    }
+    return Promise.resolve();
   }
 
   static createApplication(appConfig) {

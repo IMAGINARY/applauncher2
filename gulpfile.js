@@ -6,6 +6,7 @@ var http_public = '.';
 var js_out_dir = '/assets/js';
 // CSS Output directory. Relative to the public directory. No trailing /.
 var css_out_dir = '/assets/css';
+var themes__dir = '/themes';
 
 var conf = require('./package.json');
 var gulp = require('gulp');
@@ -86,17 +87,27 @@ gulp.task('scripts:watch', function () {
   gulp.watch(['./src/*.js'], ['scripts:dev']);
 });
 
-gulp.task('sass', function () {
-  gulp.src('./sass/**/*.scss')
+gulp.task('sass:default', function () {
+  gulp.src(['./sass/**/*.scss', '!./sass/themes/**/*.scss'])
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest(http_public + css_out_dir));
 });
 
-gulp.task('sass:watch', function () {
-  gulp.watch('./sass/**/*.scss', ['sass']);
+gulp.task('sass:themes', function () {
+  gulp.src('./sass/themes/**/*.scss')
+    .pipe(sourcemaps.init())
+    .pipe(sass().on('error', sass.logError))
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest(http_public + themes__dir));
 });
+
+gulp.task('sass:watch', function () {
+  gulp.watch('./sass/**/*.scss', ['sass:default']);
+});
+
+gulp.task('sass', ['sass:default', 'sass:themes']);
 
 gulp.task('distribute', function () {
   pack(process.cwd(), {
