@@ -325,6 +325,8 @@ export default class AppLauncher {
 
     utilBar.append(this.$titlePane);
 
+    this.disableDrag(utilBar);
+
     return utilBar;
   }
 
@@ -372,6 +374,10 @@ export default class AppLauncher {
     return itemsPerRow;
   }
 
+  disableDrag($element) {
+    $element.on('dragstart', () => false);
+  }
+
   renderMainMenu() {
     const mainMenu = $('<div class="menu-main"></div>');
     const itemsPerRow = this.itemsPerRow(this.apps.length, this.MAX_ITEMS_PER_ROW);
@@ -396,6 +402,8 @@ export default class AppLauncher {
 
     item.append($(`<img src="${app.getIcon()}" class="icon"></div>`));
     item.append($(`<div class="name">${app.getName(this.lang)}</div>`));
+
+    this.disableDrag(item);
 
     return item;
   }
@@ -430,6 +438,8 @@ export default class AppLauncher {
       $logo.append($("<div class='logo-text-wrapper'></div>").append(this.$logoText));
     }
 
+    this.disableDrag($logo);
+
     return $logo;
   }
 
@@ -462,6 +472,8 @@ export default class AppLauncher {
         $menu.append($item);
       }
     }
+
+    this.disableDrag($menu);
 
     return $menu;
   }
