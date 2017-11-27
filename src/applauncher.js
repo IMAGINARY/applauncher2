@@ -362,6 +362,16 @@ export default class AppLauncher {
   itemsPerRow(itemCount, maxItemsPerRow) {
     const itemsPerRow = [];
 
+    // If there's an applicable layout in the configuration, use it
+    if (this.config.iconsPerRow &&
+      Array.isArray(this.config.iconsPerRow) &&
+      this.config.iconsPerRow.length <= 3 &&
+      this.config.iconsPerRow.reduce((sum, a) => sum + a) === itemCount &&
+      Math.max.apply(null, this.config.iconsPerRow) <= maxItemsPerRow
+    ) {
+      return this.config.iconsPerRow;
+    }
+
     // Hardwired handling
     if (itemCount <= 18 && maxItemsPerRow == 6) {
       return this.itemsPerRow6(itemCount);

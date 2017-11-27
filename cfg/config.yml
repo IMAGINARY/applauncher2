@@ -70,6 +70,15 @@ apps:
 infoApp: https://imaginary.github.io/cindyjs-apps/info
 
 #
+# Icons per row
+# Allows overriding the default icon layout by specifying an array of integers
+# indicating how many icons to use per row.
+# This new layout will only be used if the sum of all rows matches exactly the
+# number of apps, and if no row exceeds the maximum number of icons allowed (6).
+#
+# iconsPerRow: [3, 5, 6]
+
+#
 # Show language switcher menu (true/false)
 #
 # NOTE: It's not always a good idea to enable a language switcher. It will make
