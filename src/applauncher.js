@@ -7,6 +7,7 @@ const superagent = require('superagent');
 const yaml = require('js-yaml');
 
 const languages = require('languages');
+const countriesList = require('countries-list');
 
 export default class AppLauncher {
 
@@ -475,16 +476,41 @@ export default class AppLauncher {
   renderLangMenu() {
     const $menu = $("<ul class='menu-lang'></ul>");
 
+    // Count the regional variations of each language
+    const variations = {};
     for (const langCode of this.config.langMenuItems) {
-      const langInfo = languages.getLanguageInfo(langCode);
-      if (langInfo) {
-        const $item = $('<li></li>');
-        const $link = $("<a href='#'></a>");
-        $link.text(langInfo.nativeName);
-        $link.on('click', this.onLangMenuChoice.bind(this, langCode));
-        $item.append($link);
-        $menu.append($item);
+      const langCodeParts = langCode.split('-');
+      variations[langCodeParts[0]] = (variations[langCodeParts[0]] || 0) + 1;
+    }
+
+    // Build the menu
+    for (const langCode of this.config.langMenuItems) {
+      const langCodeParts = langCode.split('-');
+      let itemText;
+      // Handle xx-xx and xx language codes separately
+      if (langCodeParts.length === 2) {
+        // For xx-xx languages we only show the country name if there
+        // is more than one variation of the language active in the configuration
+        const languageName =
+          languages.getLanguageInfo(langCodeParts[0]).nativeName || langCodeParts[0];
+        if (variations[langCodeParts[0]] > 1) {
+          const countryName =
+            (countriesList.countries[langCodeParts[1].toUpperCase()] &&
+          countriesList.countries[langCodeParts[1].toUpperCase()].native) || langCodeParts[1];
+          itemText = `${languageName} (${countryName})`;
+        } else {
+          itemText = languageName;
+        }
+      } else {
+        itemText = languages.getLanguageInfo(langCode).nativeName;
       }
+
+      const $item = $('<li></li>');
+      const $link = $("<a href='#'></a>");
+      $link.text(itemText);
+      $link.on('click', this.onLangMenuChoice.bind(this, langCode));
+      $item.append($link);
+      $menu.append($item);
     }
 
     this.disableDrag($menu);

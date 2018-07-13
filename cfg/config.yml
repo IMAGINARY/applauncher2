@@ -14,6 +14,7 @@ title:
   ru: Математика на ощупь
   ro: Matematica de atins
   it: Math to Touch
+  pt-br: Matemática para tocar
 
 #
 # Logo image to show on top of the menu.
@@ -103,6 +104,7 @@ langMenuItems:
   - de
   - es
   - it
+  - pt-br
   - ro
   - ru
   - zh
