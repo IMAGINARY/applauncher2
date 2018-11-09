@@ -9,6 +9,7 @@ if (!window.IMAGINARY) {
 
 const appLauncher = new AppLauncher();
 window.IMAGINARY.AppLauncher = appLauncher;
+// OnReady
 $(() => {
   appLauncher.init().then(() => {
     $('body').append(appLauncher.render());

@@ -29,6 +29,14 @@ export default class AppLauncher {
     this.MAX_ITEMS_PER_ROW = 6;
   }
 
+  /**
+   * Initializes the app
+   *
+   * This method should be called once, and only once, after the DOM finished initializing.
+   * It loads configuration asynchronously.
+   *
+   * @return {Promise<void>}
+   */
   init() {
     this.$body = $('body');
     this.$body.addClass('lock-position');
@@ -55,9 +63,16 @@ export default class AppLauncher {
         this.setMenuMode();
         this.initResizeHandler();
         this.enableUserInput();
+
+        return Promise.resolve();
       });
   }
 
+  /**
+   * Inits the window resize handler
+   *
+   * The resize handler is throttled (out of love for CPUs everywhere).
+   */
   initResizeHandler() {
     // Timeout for throttled resize
     let resizeTimeout;
@@ -74,6 +89,16 @@ export default class AppLauncher {
     });
   }
 
+  /**
+   * Reads the specified config file
+   *
+   * If the name is not specified the file cfg/config.yml is loaded.
+   *
+   * @param {string} configName
+   *  (optional) The identifier / prefix of the config file (cfg/<prefix>.config.yml)
+   * @return {Promise<any>}
+   *  The promise resolves to an object containing the configuration
+   */
   readConfig(configName) {
     return new Promise((accept, reject) => {
       const prefix = configName ? `${configName}.` : '';
@@ -95,6 +120,13 @@ export default class AppLauncher {
     });
   }
 
+  /**
+   * Loads an app config file (app.json)
+   *
+   * @param {string} appRoot
+   *  The path (absolute or relative) to the application's root directory
+   * @return {*}
+   */
   static loadAppConfig(appRoot) {
     return superagent.get(`${appRoot}/app.json?cache=${Date.now()}`)
       .set('Accept', 'json')
@@ -108,6 +140,12 @@ export default class AppLauncher {
       });
   }
 
+  /**
+   * Loads and activates a theme
+   *
+   * @param {string} themeName
+   * @return {Promise<void>}
+   */
   static loadTheme(themeName) {
     if (themeName !== undefined && themeName !== 'default') {
       const $themeCSSFile = $('<link>');
@@ -119,6 +157,13 @@ export default class AppLauncher {
     return Promise.resolve();
   }
 
+  /**
+   * Factory method to create Application objects from a configuration
+   *
+   * @param {object} appConfig
+   *  The app's configuration
+   * @return {Application}
+   */
   static createApplication(appConfig) {
     if (appConfig.type === 'iframe') {
       return new IframeApplication(appConfig);
@@ -128,6 +173,13 @@ export default class AppLauncher {
     throw new Error(`Unknown application type : ${appConfig.type}`);
   }
 
+  /**
+   * Loads multiple apps in parallel
+   *
+   * @param {Iterable} appList
+   *  A list of paths (relative or absolute) to the apps to be loaded
+   * @return {Promise<any[]>}
+   */
   loadApps(appList) {
     this.apps = [];
     const appLoaders = [];
@@ -147,13 +199,27 @@ export default class AppLauncher {
     return Promise.all(appLoaders);
   }
 
+  /**
+   * Loads the specified infoApp
+   *
+   * @param {string} appRoot
+   *  Path (relative or absolute) to the infoApp
+   * @return {Promise<void>}
+   */
   loadInfoApp(appRoot) {
     return AppLauncher.loadAppConfig(appRoot)
       .then((appConfig) => {
         this.infoApp = new IframeApplication(appConfig);
+        return Promise.resolve();
       });
   }
 
+  /**
+   * Sets the active language
+   *
+   * @param {string} langCode
+   *  ISO language code
+   */
   setLang(langCode) {
     this.lang = langCode;
     this.setTitle();
@@ -162,16 +228,27 @@ export default class AppLauncher {
     this.resizeTitle();
   }
 
+  /**
+   * Top logo click handler
+   *
+   * @return {boolean}
+   */
   onLogoClicked() {
     this.closeApp();
     this.setMenuMode();
     return false;
   }
 
+  /**
+   * Language switch button handler
+   */
   onLangButton() {
     this.showOverlay(this.renderLangMenu());
   }
 
+  /**
+   * Info button handler
+   */
   onInfoButton() {
     if (this.runningApp === this.infoApp) {
       return false;
@@ -180,6 +257,11 @@ export default class AppLauncher {
     return false;
   }
 
+  /**
+   * Close button handler
+   *
+   * @return {boolean}
+   */
   onCloseButton() {
     if (this.overlayVisible) {
       this.closeOverlay();
@@ -190,11 +272,24 @@ export default class AppLauncher {
     return false;
   }
 
+  /**
+   * App icon click handler
+   *
+   * @param {object} app
+   *  The app config
+   * @return {boolean}
+   */
   onAppButton(app) {
     this.runApp(app);
     return false;
   }
 
+  /**
+   * Run an application
+   *
+   * @param {object} app
+   *  The configuration of the app to run
+   */
   runApp(app) {
     this.disableUserInput();
     this.closeApp();
@@ -219,6 +314,9 @@ export default class AppLauncher {
     }, 500);
   }
 
+  /**
+   * Close the active app
+   */
   closeApp() {
     this.setAppVisible(false);
     this.runningApp = null;
@@ -226,10 +324,16 @@ export default class AppLauncher {
     $(this.appContainer).empty();
   }
 
+  /**
+   * Clear the active mode
+   */
   clearMode() {
     this.$body.removeClass((index, className) => (className.match(/(^|\s)mode-\S+/g) || []).join(' '));
   }
 
+  /**
+   * Sets the title
+   */
   setTitle() {
     if (typeof this.config.title === 'string') {
       this.title = this.config.title;
@@ -244,21 +348,36 @@ export default class AppLauncher {
     document.title = this.title;
   }
 
+  /**
+   * Sets the launcher mode to 'menu'
+   */
   setMenuMode() {
     this.clearMode();
     this.$body.addClass('mode-menu');
   }
 
+  /**
+   * Sets the launcher mode to 'app'
+   */
   setAppMode() {
     this.clearMode();
     this.$body.addClass('mode-app');
   }
 
+  /**
+   * Sets the launcher mode to 'blank'
+   */
   setBlankMode() {
     this.clearMode();
     this.$body.addClass('mode-blank');
   }
 
+  /**
+   * Sets the app visibility
+   *
+   * @param {bool} visibility
+   *  true if the app should be visible
+   */
   setAppVisible(visibility) {
     if (visibility) {
       this.$body.addClass('app-visible');
@@ -267,6 +386,11 @@ export default class AppLauncher {
     }
   }
 
+  /**
+   * Shows content on the overlay
+   *
+   * @param {string|Element|Array|jQuery} content
+   */
   showOverlay(content) {
     this.overlayVisible = true;
     this.setAppMode();
@@ -274,6 +398,9 @@ export default class AppLauncher {
     this.$overlayContainer.append(content);
   }
 
+  /**
+   * Closes the overlay
+   */
   closeOverlay() {
     this.$body.removeClass('overlay-visible');
     this.$overlayContainer.empty();
@@ -283,23 +410,42 @@ export default class AppLauncher {
     this.overlayVisible = false;
   }
 
+  /**
+   * Sets the title and makes it visible
+   *
+   * @param {string} aTitle
+   */
   displayTitle(aTitle) {
     this.$titlePane.text(aTitle);
     this.$titlePane.addClass('visible');
   }
 
+  /**
+   * Hides the title
+   */
   hideTitle() {
     this.$titlePane.removeClass('visible');
   }
 
+  /**
+   * Disables user input
+   */
   disableUserInput() {
     this.$inputMask.show();
   }
 
+  /**
+   * Enables user input
+   */
   enableUserInput() {
     this.$inputMask.hide();
   }
 
+  /**
+   * Renders the utility bar
+   *
+   * @return {JQuery | jQuery | HTMLElement}
+   */
   renderUtilBar() {
     const utilBar = $('<div class="util-bar"></div>');
 
@@ -331,6 +477,16 @@ export default class AppLauncher {
     return utilBar;
   }
 
+  /**
+   * Returns the number of icons to place per row
+   *
+   * The values are hardcoded and this function only works
+   * for 1-18 items
+   *
+   * @param {number} itemCount
+   *  Number of app icons to lay out
+   * @return {array}
+   */
   static itemsPerRow6(itemCount) {
     const layouts = {
       1: [1],
@@ -356,6 +512,20 @@ export default class AppLauncher {
     return layouts[itemCount];
   }
 
+  /**
+   * Returns the row layout to use for app icons
+   *
+   * The layout is returned as an array where each item
+   * is the number of icons to place in each row
+   *
+   * The distribution is calculated unless the configuration file specifies it explicitly.
+   *
+   * @param {number} itemCount
+   *  Number of icons
+   * @param maxItemsPerRow
+   *  Max number of items to place per row
+   * @return {Array}
+   */
   itemsPerRow(itemCount, maxItemsPerRow) {
     const itemsPerRow = [];
 
@@ -385,6 +555,11 @@ export default class AppLauncher {
     return itemsPerRow;
   }
 
+  /**
+   * Renders the main menu
+   *
+   * @return {JQuery | jQuery | HTMLElement}
+   */
   renderMainMenu() {
     const mainMenu = $('<div class="menu-main"></div>');
     const itemsPerRow = this.itemsPerRow(this.apps.length, this.MAX_ITEMS_PER_ROW);
@@ -403,6 +578,12 @@ export default class AppLauncher {
     return mainMenu;
   }
 
+  /**
+   * Renders a menu item
+   *
+   * @param app
+   * @return {JQuery | jQuery}
+   */
   renderMainMenuItem(app) {
     const item = $('<a href="#" class="button menu-main-button"></a>')
       .on('click', this.onAppButton.bind(this, app));
@@ -415,12 +596,22 @@ export default class AppLauncher {
     return item;
   }
 
+  /**
+   * Renders the app container
+   *
+   * @return {JQuery | jQuery | HTMLElement}
+   */
   renderAppContainer() {
     const appContainer = $('<div class="appContainer"></div>');
     this.appContainer = appContainer[0];
     return appContainer;
   }
 
+  /**
+   * Renders the logo
+   *
+   * @return {JQuery | jQuery}
+   */
   renderLogo() {
     const $logo = $("<a href='#' class='logo'></a>")
       .on('click', this.onLogoClicked.bind(this));
@@ -450,6 +641,11 @@ export default class AppLauncher {
     return $logo;
   }
 
+  /**
+   * Renders the overlay container
+   *
+   * @return {JQuery | jQuery | HTMLElement}
+   */
   renderOverlayContainer() {
     const $overlay = $("<div class='overlay'></div>");
     $overlay.append($("<div class='overlay-background'></div>"));
@@ -459,12 +655,23 @@ export default class AppLauncher {
     return $overlay;
   }
 
+  /**
+   * Language menu selection handler
+   *
+   * @param code
+   * @return {boolean}
+   */
   onLangMenuChoice(code) {
     this.closeOverlay();
     this.setLang(code);
     return false;
   }
 
+  /**
+   * Renders the language switch menu
+   *
+   * @return {JQuery | jQuery | HTMLElement}
+   */
   renderLangMenu() {
     const $menu = $("<ul class='menu-lang'></ul>");
 
@@ -510,6 +717,9 @@ export default class AppLauncher {
     return $menu;
   }
 
+  /**
+   * Resizes the title to fit the window size
+   */
   resizeTitle() {
     if (this.$logoText) {
       const maxWidth = window.innerWidth * 0.9;
@@ -524,14 +734,25 @@ export default class AppLauncher {
     }
   }
 
+  /**
+   * Resize handler
+   */
   onResize() {
     this.resizeTitle();
   }
 
+  /**
+   * Ready handler
+   */
   onReady() {
     this.resizeTitle();
   }
 
+  /**
+   * Renders the app Launcher
+   *
+   * @return {JQuery | jQuery | HTMLElement}
+   */
   render() {
     const view = $("<div class='appLauncher'></div>");
     const rowCount = Math.ceil(this.apps.length / this.MAX_ITEMS_PER_ROW);

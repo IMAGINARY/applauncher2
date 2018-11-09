@@ -1,5 +1,8 @@
 import Application from './application';
 
+/**
+ * Web applications that run in an iframe
+ */
 export default class IframeApplicatione extends Application {
 
   constructor(config) {

@@ -2,6 +2,9 @@
 import isElectron from 'is-electron';
 import Application from './application';
 
+/**
+ * Applications that are executable programs that run as child processes
+ */
 export default class ExecutableApplication extends Application {
 
   constructor(config) {

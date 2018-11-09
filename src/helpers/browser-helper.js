@@ -19,6 +19,14 @@ export default class BrowserHelper {
     return urlParams;
   }
 
+  /**
+   * Disables default dragging of a DOM Element
+   *
+   * The normal behavior of browsers is that DOM Elements can be dragged as translucent
+   * copies of their content. This function disables this behavior for a single element.
+   *
+   * @param {jQuery|JQuery} $element
+   */
   static disableDrag($element) {
     $element.on('dragstart', () => false);
   }
