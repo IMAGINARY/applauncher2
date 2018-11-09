@@ -18,4 +18,8 @@ export default class BrowserHelper {
 
     return urlParams;
   }
+
+  static disableDrag($element) {
+    $element.on('dragstart', () => false);
+  }
 }

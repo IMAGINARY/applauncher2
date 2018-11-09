@@ -1,4 +1,7 @@
+import Promise from 'bluebird';
 import AppLauncher from './applauncher';
+
+window.Promise = Promise;
 
 if (!window.IMAGINARY) {
   window.IMAGINARY = {};

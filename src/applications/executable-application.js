@@ -1,6 +1,6 @@
+/* eslint-disable global-require */
+import isElectron from 'is-electron';
 import Application from './application';
-
-const isElectron = require('is-electron');
 
 export default class ExecutableApplication extends Application {
 
@@ -32,6 +32,7 @@ export default class ExecutableApplication extends Application {
 // eslint-disable-next-line global-require,import/no-unresolved,import/no-extraneous-dependencies
         const electron = require('electron');
 // eslint-disable-next-line global-require,import/no-unresolved,import/no-extraneous-dependencies
+        // noinspection NodeJsCodingAssistanceForCoreModules
         const childProcess = require('child_process');
         const appProcess = childProcess.spawn(
           this.main,
@@ -45,7 +46,7 @@ export default class ExecutableApplication extends Application {
         );
         appProcess.on('exit', () => this.close());
         appProcess.on('error', (err) => {
-          console.error(`Error launching executable application ${this.id}: ${err.message}`) ;
+          console.error(`Error launching executable application ${this.id}: ${err.message}`);
           this.close();
         });
       } catch (err) {

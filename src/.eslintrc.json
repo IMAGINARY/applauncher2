@@ -13,16 +13,8 @@
     "jquery": true
   },
   "globals": {
-    "d3": true,
-    "updateMap": true,
-    "clearGeodesic": true,
-    "clearLoxodrome": true,
-    "clearEllipses": true,
-    "undoCommand": true,
-    "projection": true,
-    "rotateToCurrentLocation": true,
-    "sampleEllipses": true
   },
   "rules": {
+    "no-console": [2, {"allow": ["warn", "error"]}]
   }
 }

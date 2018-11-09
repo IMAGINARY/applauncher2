@@ -1,4 +1,4 @@
-const EventEmitter = require('events');
+import EventEmitter from 'events';
 
 export default class Application extends EventEmitter {
 
@@ -16,7 +16,6 @@ export default class Application extends EventEmitter {
     this.main = config.main;
     this.name = config.name;
     this.description = config.description;
-    console.log(`Create app ${this.id}`);
   }
 
   getName(lang = 'en') {

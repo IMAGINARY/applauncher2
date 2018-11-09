@@ -1,14 +1,14 @@
-import IframeApplication from './iframe-application';
-import ExecutableApplication from './executable-application';
-import BrowserHelper from './browser-helper';
+import superagent from 'superagent';
+import yaml from 'js-yaml';
+import languages from 'languages';
+import { countries } from 'countries-list';
+import IframeApplication from './applications/iframe-application';
+import ExecutableApplication from './applications/executable-application';
+import BrowserHelper from './helpers/browser-helper';
 
-const Promise = require('bluebird');
-const superagent = require('superagent');
-const yaml = require('js-yaml');
-
-const languages = require('languages');
-const countriesList = require('countries-list');
-
+/**
+ * The main AppLauncher Application
+ */
 export default class AppLauncher {
 
   constructor() {
@@ -32,14 +32,14 @@ export default class AppLauncher {
   init() {
     this.$body = $('body');
     this.$body.addClass('lock-position');
-    const validCfgName = /^[a-zA-Z0-9_\-\.]+$/;
+    const validCfgName = /^[a-zA-Z0-9_\-.]+$/;
     const cfgName = validCfgName.test(BrowserHelper.getQueryString().cfg) ?
       BrowserHelper.getQueryString().cfg : '';
     return this.readConfig(cfgName)
       .then((config) => {
         this.config = config;
         const tasks = [];
-        tasks.push(this.loadTheme(config.theme));
+        tasks.push(AppLauncher.loadTheme(config.theme));
         tasks.push(this.loadApps(config.apps));
         if (config.infoApp) {
           tasks.push(this.loadInfoApp(config.infoApp));
@@ -75,7 +75,6 @@ export default class AppLauncher {
   }
 
   readConfig(configName) {
-    console.log(`Reading config (${configName || 'default'})`);
     return new Promise((accept, reject) => {
       const prefix = configName ? `${configName}.` : '';
       superagent
@@ -96,7 +95,7 @@ export default class AppLauncher {
     });
   }
 
-  loadAppConfig(appRoot) {
+  static loadAppConfig(appRoot) {
     return superagent.get(`${appRoot}/app.json?cache=${Date.now()}`)
       .set('Accept', 'json')
       .then((response) => {
@@ -109,10 +108,9 @@ export default class AppLauncher {
       });
   }
 
-  loadTheme(themeName) {
+  static loadTheme(themeName) {
     if (themeName !== undefined && themeName !== 'default') {
-      console.log(`Loading theme ${themeName}`);
-      const $themeCSSFile = $('<link></link>');
+      const $themeCSSFile = $('<link>');
       $themeCSSFile.attr('rel', 'stylesheet');
       $themeCSSFile.attr('type', 'text/css');
       $themeCSSFile.attr('href', `themes/${themeName}/default.css`);
@@ -131,14 +129,13 @@ export default class AppLauncher {
   }
 
   loadApps(appList) {
-    console.log('Loading apps');
     this.apps = [];
     const appLoaders = [];
     let i = 0;
     for (const appRoot of appList) {
       const appIndex = i;
       appLoaders.push(
-        this.loadAppConfig(appRoot)
+        AppLauncher.loadAppConfig(appRoot)
           .then((appConfig) => {
             this.apps[appIndex] = (AppLauncher.createApplication(appConfig));
           }
@@ -151,8 +148,7 @@ export default class AppLauncher {
   }
 
   loadInfoApp(appRoot) {
-    console.log('Loading info app');
-    return this.loadAppConfig(appRoot)
+    return AppLauncher.loadAppConfig(appRoot)
       .then((appConfig) => {
         this.infoApp = new IframeApplication(appConfig);
       });
@@ -330,12 +326,12 @@ export default class AppLauncher {
 
     utilBar.append(this.$titlePane);
 
-    this.disableDrag(utilBar);
+    BrowserHelper.disableDrag(utilBar);
 
     return utilBar;
   }
 
-  itemsPerRow6(itemCount) {
+  static itemsPerRow6(itemCount) {
     const layouts = {
       1: [1],
       2: [2],
@@ -374,8 +370,8 @@ export default class AppLauncher {
     }
 
     // Hardwired handling
-    if (itemCount <= 18 && maxItemsPerRow == 6) {
-      return this.itemsPerRow6(itemCount);
+    if (itemCount <= 18 && maxItemsPerRow === 6) {
+      return AppLauncher.itemsPerRow6(itemCount);
     }
 
     const rowCount = Math.ceil(itemCount / maxItemsPerRow);
@@ -387,10 +383,6 @@ export default class AppLauncher {
     }
 
     return itemsPerRow;
-  }
-
-  disableDrag($element) {
-    $element.on('dragstart', () => false);
   }
 
   renderMainMenu() {
@@ -418,7 +410,7 @@ export default class AppLauncher {
     item.append($(`<img src="${app.getIcon()}" class="icon"></div>`));
     item.append($(`<div class="name">${app.getName(this.lang)}</div>`));
 
-    this.disableDrag(item);
+    BrowserHelper.disableDrag(item);
 
     return item;
   }
@@ -453,7 +445,7 @@ export default class AppLauncher {
       $logo.append($("<div class='logo-text-wrapper'></div>").append(this.$logoText));
     }
 
-    this.disableDrag($logo);
+    BrowserHelper.disableDrag($logo);
 
     return $logo;
   }
@@ -495,8 +487,8 @@ export default class AppLauncher {
           languages.getLanguageInfo(langCodeParts[0]).nativeName || langCodeParts[0];
         if (variations[langCodeParts[0]] > 1) {
           const countryName =
-            (countriesList.countries[langCodeParts[1].toUpperCase()] &&
-          countriesList.countries[langCodeParts[1].toUpperCase()].native) || langCodeParts[1];
+            (countries[langCodeParts[1].toUpperCase()] &&
+          countries[langCodeParts[1].toUpperCase()].native) || langCodeParts[1];
           itemText = `${languageName} (${countryName})`;
         } else {
           itemText = languageName;
@@ -513,7 +505,7 @@ export default class AppLauncher {
       $menu.append($item);
     }
 
-    this.disableDrag($menu);
+    BrowserHelper.disableDrag($menu);
 
     return $menu;
   }
