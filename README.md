@@ -33,7 +33,8 @@ to configure this program then it's not the one you want.
 
 ## Configuration
 
-The configuration file is at `cfg/config.yml`. It is fully commented so it documents its own format. 
+The configuration file is at `cfg/config.yml`. It is fully commented so it documents its own format. (NOTE:
+The JSON schema used for validation is also available at `src/schemas/cfg.schema.json`.)
 
 The default configuration provided is for demo purposes and offers a number of CindyJS applications found
 in the internet. A sample configuration that accesses the apps locally is also provided 

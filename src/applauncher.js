@@ -1,5 +1,3 @@
-import superagent from 'superagent';
-import yaml from 'js-yaml';
 import languages from 'languages';
 import { countries } from 'countries-list';
 import IframeApplication from './applications/iframe-application';
@@ -11,61 +9,38 @@ import BrowserHelper from './helpers/browser-helper';
  */
 export default class AppLauncher {
 
-  constructor() {
-    this.config = {};
-    this.lang = 'en';
-    this.title = 'IMAGINARY';
+  constructor(config) {
+    this.config = Object.assign({}, AppLauncher.defaultCfg, config);
+    this.lang = config.lang;
+    this.title = config.title;
     this.logo = '';
     this.apps = [];
     this.appContainer = null;
     this.runningApp = null;
-    this.infoApp = null;
-    this.$body = null;
+    this.infoApp = config.infoApp ? config.infoApp : null;
+
+    this.$body = $('body');
+    this.$body.addClass('lock-position');
     this.$inputMask = $('<div class="inputmask"></div>');
     this.$titlePane = $('<div class="titlePane"></div>');
     this.$logoText = null;
     this.$overlayContainer = null;
     this.overlayVisible = false;
     this.MAX_ITEMS_PER_ROW = 6;
-  }
 
-  /**
-   * Initializes the app
-   *
-   * This method should be called once, and only once, after the DOM finished initializing.
-   * It loads configuration asynchronously.
-   *
-   * @return {Promise<void>}
-   */
-  init() {
-    this.$body = $('body');
-    this.$body.addClass('lock-position');
-    const validCfgName = /^[a-zA-Z0-9_\-.]+$/;
-    const cfgName = validCfgName.test(BrowserHelper.getQueryString().cfg) ?
-      BrowserHelper.getQueryString().cfg : '';
-    return this.readConfig(cfgName)
-      .then((config) => {
-        this.config = config;
-        const tasks = [];
-        tasks.push(AppLauncher.loadTheme(config.theme));
-        tasks.push(this.loadApps(config.apps));
-        if (config.infoApp) {
-          tasks.push(this.loadInfoApp(config.infoApp));
-        }
-        return Promise.all(tasks);
-      })
-      .then(() => {
-        const qs = BrowserHelper.getQueryString();
-        if (qs.lang) {
-          this.lang = qs.lang;
-        }
-        this.setTitle();
-        this.setMenuMode();
-        this.initResizeHandler();
-        this.enableUserInput();
+    AppLauncher.loadTheme(config.theme);
 
-        return Promise.resolve();
-      });
+    config.apps.forEach((appRoot, i) => {
+      this.apps[i] = AppLauncher.createApplication(config.appCfgs[appRoot]);
+    });
+    if (config.infoApp) {
+      this.infoApp = new IframeApplication(config.appCfgs[config.infoApp]);
+    }
+
+    this.setTitle();
+    this.setMenuMode();
+    this.initResizeHandler();
+    this.enableUserInput();
   }
 
   /**
@@ -90,61 +65,9 @@ export default class AppLauncher {
   }
 
   /**
-   * Reads the specified config file
-   *
-   * If the name is not specified the file cfg/config.yml is loaded.
-   *
-   * @param {string} configName
-   *  (optional) The identifier / prefix of the config file (cfg/<prefix>.config.yml)
-   * @return {Promise<any>}
-   *  The promise resolves to an object containing the configuration
-   */
-  readConfig(configName) {
-    return new Promise((accept, reject) => {
-      const prefix = configName ? `${configName}.` : '';
-      superagent
-        .get(`cfg/${prefix}config.yml?cache=${Date.now()}`)
-        .then((response) => {
-          const config = yaml.safeLoad(response.text);
-          if (config.lang) {
-            this.lang = config.lang;
-          }
-          if (config.infoApp) {
-            this.infoApp = config.infoApp;
-          }
-          accept(config);
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    });
-  }
-
-  /**
-   * Loads an app config file (app.json)
-   *
-   * @param {string} appRoot
-   *  The path (absolute or relative) to the application's root directory
-   * @return {*}
-   */
-  static loadAppConfig(appRoot) {
-    return superagent.get(`${appRoot}/app.json?cache=${Date.now()}`)
-      .set('Accept', 'json')
-      .then((response) => {
-        const appConfig = response.body;
-        appConfig.root = appRoot;
-        if (appConfig.type === undefined) {
-          appConfig.type = 'iframe';
-        }
-        return appConfig;
-      });
-  }
-
-  /**
    * Loads and activates a theme
    *
    * @param {string} themeName
-   * @return {Promise<void>}
    */
   static loadTheme(themeName) {
     if (themeName !== undefined && themeName !== 'default') {
@@ -154,7 +77,6 @@ export default class AppLauncher {
       $themeCSSFile.attr('href', `themes/${themeName}/default.css`);
       $themeCSSFile.appendTo('head');
     }
-    return Promise.resolve();
   }
 
   /**
@@ -171,47 +93,6 @@ export default class AppLauncher {
       return new ExecutableApplication(appConfig);
     }
     throw new Error(`Unknown application type : ${appConfig.type}`);
-  }
-
-  /**
-   * Loads multiple apps in parallel
-   *
-   * @param {Iterable} appList
-   *  A list of paths (relative or absolute) to the apps to be loaded
-   * @return {Promise<any[]>}
-   */
-  loadApps(appList) {
-    this.apps = [];
-    const appLoaders = [];
-    let i = 0;
-    for (const appRoot of appList) {
-      const appIndex = i;
-      appLoaders.push(
-        AppLauncher.loadAppConfig(appRoot)
-          .then((appConfig) => {
-            this.apps[appIndex] = (AppLauncher.createApplication(appConfig));
-          }
-        )
-      );
-      i += 1;
-    }
-
-    return Promise.all(appLoaders);
-  }
-
-  /**
-   * Loads the specified infoApp
-   *
-   * @param {string} appRoot
-   *  Path (relative or absolute) to the infoApp
-   * @return {Promise<void>}
-   */
-  loadInfoApp(appRoot) {
-    return AppLauncher.loadAppConfig(appRoot)
-      .then((appConfig) => {
-        this.infoApp = new IframeApplication(appConfig);
-        return Promise.resolve();
-      });
   }
 
   /**
@@ -745,7 +626,7 @@ export default class AppLauncher {
    * Ready handler
    */
   onReady() {
-    this.resizeTitle();
+
   }
 
   /**
@@ -769,3 +650,9 @@ export default class AppLauncher {
     return view;
   }
 }
+
+AppLauncher.defaultCfg = {
+  lang: 'en',
+  title: 'IMAGINARY',
+  langMenuShow: false,
+};

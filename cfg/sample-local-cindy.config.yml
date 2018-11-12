@@ -24,7 +24,7 @@ apps:
   - apps/cindyjs/sequenzer
   - apps/cindyjs/whitney
 infoApp: apps/cindyjs/info
-langMenuShow: yes
+langMenuShow: true
 langMenuItems:
   - en
   - de

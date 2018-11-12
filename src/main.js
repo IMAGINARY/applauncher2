@@ -1,4 +1,6 @@
+// import '@babel/polyfill';
 import Promise from 'bluebird';
+import AppLauncherLoader from './applauncher-loader';
 import AppLauncher from './applauncher';
 
 window.Promise = Promise;
@@ -7,12 +9,15 @@ if (!window.IMAGINARY) {
   window.IMAGINARY = {};
 }
 
-const appLauncher = new AppLauncher();
-window.IMAGINARY.AppLauncher = appLauncher;
 // OnReady
 $(() => {
-  appLauncher.init().then(() => {
+  const loader = new AppLauncherLoader();
+  loader.run().then((cfg) => {
+    const appLauncher = new AppLauncher(cfg);
+    window.IMAGINARY.AppLauncher = appLauncher;
     $('body').append(appLauncher.render());
-    appLauncher.onReady();
+    appLauncher.resizeTitle();
+  }).catch((e) => {
+    // todo: display fatal error
   });
 });
