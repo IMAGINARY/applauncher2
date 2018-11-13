@@ -1,3 +1,4 @@
+import EventEmitter from 'events';
 import superagent from 'superagent';
 import Ajv from 'ajv';
 import yaml from 'js-yaml';
@@ -10,6 +11,10 @@ import appCfgSchema from './schemas/appcfg.schema.json';
  */
 export default class AppLauncherLoader {
   constructor() {
+    this.events = new EventEmitter();
+    this.progress = 0;
+    this.progressStep = 0.25;
+
     this.qs = BrowserHelper.getQueryString();
 
     this.ajv = new Ajv();
@@ -32,9 +37,17 @@ export default class AppLauncherLoader {
       .then(cfg => this.loadAllAppCfgs(cfg)
           .then(appCfgs => Object.assign({}, cfg, { appCfgs })))
       .catch((e) => {
-        // todo: throw and let the main.js handle it showin the error onscreen
         console.error(e);
+        throw e;
       });
+  }
+
+  incrementProgress() {
+    this.progress += this.progressStep;
+    if (this.progress > 1) {
+      this.progress = 1;
+    }
+    this.events.emit('progress', this.progress);
   }
 
   /**
@@ -48,10 +61,14 @@ export default class AppLauncherLoader {
     const cfgFile = `cfg/${this.getCfgPrefix()}config.yml`;
     return superagent.get(`${cfgFile}?cache=${Date.now()}`)
       .then(response => yaml.safeLoad(response.text))
+      .catch((e) => {
+        throw new Error(`Error parsing ${cfgFile}: ${e.message}`);
+      })
       .then((cfg) => {
         if (!this.validateCfg(cfg)) {
           throw new Error(`Error in ${cfgFile}: ${this.ajv.errorsText(this.validateCfg.errors)}`);
         }
+        this.incrementProgress();
         return cfg;
       })
       .then(cfg => Object.assign({}, cfg, this.getQSOverrides()));
@@ -92,9 +109,11 @@ export default class AppLauncherLoader {
 
     const apps = cfg.apps.concat(cfg.infoApp ? cfg.infoApp : []);
 
+    this.progressStep = (1 - this.progress) / apps.length;
     return Promise.map(apps, appRoot => this.loadAppCfg(appRoot)
       .then((appCfg) => {
         allCfgs[appRoot] = appCfg;
+        this.incrementProgress();
       })
     ).then(() => allCfgs);
   }

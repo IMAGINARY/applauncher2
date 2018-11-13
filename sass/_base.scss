@@ -7,7 +7,7 @@ html, body {
 body {
   @include regularText;
   color: $color-text;
-  background-color: $color-background;
+  background-color: $color-black;
   @include neg;
 }
 

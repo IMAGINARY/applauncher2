@@ -11,13 +11,13 @@ export default class AppLauncher {
 
   constructor(config) {
     this.config = Object.assign({}, AppLauncher.defaultCfg, config);
-    this.lang = config.lang;
-    this.title = config.title;
+    this.lang = this.config.lang;
+    this.title = this.config.title;
     this.logo = '';
     this.apps = [];
     this.appContainer = null;
     this.runningApp = null;
-    this.infoApp = config.infoApp ? config.infoApp : null;
+    this.infoApp = this.config.infoApp ? this.config.infoApp : null;
 
     this.$body = $('body');
     this.$body.addClass('lock-position');
@@ -28,13 +28,13 @@ export default class AppLauncher {
     this.overlayVisible = false;
     this.MAX_ITEMS_PER_ROW = 6;
 
-    AppLauncher.loadTheme(config.theme);
+    AppLauncher.loadTheme(this.config.theme);
 
-    config.apps.forEach((appRoot, i) => {
-      this.apps[i] = AppLauncher.createApplication(config.appCfgs[appRoot]);
+    this.config.apps.forEach((appRoot, i) => {
+      this.apps[i] = AppLauncher.createApplication(this.config.appCfgs[appRoot]);
     });
-    if (config.infoApp) {
-      this.infoApp = new IframeApplication(config.appCfgs[config.infoApp]);
+    if (this.config.infoApp) {
+      this.infoApp = new IframeApplication(this.config.appCfgs[this.config.infoApp]);
     }
 
     this.setTitle();
@@ -70,7 +70,7 @@ export default class AppLauncher {
    * @param {string} themeName
    */
   static loadTheme(themeName) {
-    if (themeName !== undefined && themeName !== 'default') {
+    if (themeName !== undefined) {
       const $themeCSSFile = $('<link>');
       $themeCSSFile.attr('rel', 'stylesheet');
       $themeCSSFile.attr('type', 'text/css');
@@ -655,4 +655,5 @@ AppLauncher.defaultCfg = {
   lang: 'en',
   title: 'IMAGINARY',
   langMenuShow: false,
+  theme: 'default',
 };
