@@ -19,13 +19,14 @@ $(() => {
   loader.events.on('progress', (progress) => {
     loaderView.setProgress(progress);
   });
-  loader.run().then((cfg) => {
+  loader.run().catch((e) => {
+    loaderView.showError(e.message);
+    throw e;
+  }).then((cfg) => {
     loaderView.$element.remove();
     const appLauncher = new AppLauncher(cfg);
     window.IMAGINARY.AppLauncher = appLauncher;
     $('body').append(appLauncher.render());
-    appLauncher.resizeTitle();
-  }).catch((e) => {
-    loaderView.showError(e.message);
+    appLauncher.onResize();
   });
 });

@@ -1,8 +1,13 @@
-import languages from 'languages';
-import { countries } from 'countries-list';
 import IframeApplication from './applications/iframe-application';
 import ExecutableApplication from './applications/executable-application';
-import BrowserHelper from './helpers/browser-helper';
+import UtilBar from './components/util-bar';
+import ImageLogo from './components/logo-img';
+import TextLogo from './components/logo-text';
+import LangMenu from './components/lang-menu';
+import Overlay from './components/overlay';
+import AppArea from './components/app-area';
+import InputMask from './components/input-mask';
+import AppMenu from './components/app-menu';
 
 /**
  * The main AppLauncher Application
@@ -10,23 +15,15 @@ import BrowserHelper from './helpers/browser-helper';
 export default class AppLauncher {
 
   constructor(config) {
+    this.$element = null;
     this.config = Object.assign({}, AppLauncher.defaultCfg, config);
     this.lang = this.config.lang;
-    this.title = this.config.title;
-    this.logo = '';
     this.apps = [];
-    this.appContainer = null;
     this.runningApp = null;
     this.infoApp = this.config.infoApp ? this.config.infoApp : null;
 
     this.$body = $('body');
     this.$body.addClass('lock-position');
-    this.$inputMask = $('<div class="inputmask"></div>');
-    this.$titlePane = $('<div class="titlePane"></div>');
-    this.$logoText = null;
-    this.$overlayContainer = null;
-    this.overlayVisible = false;
-    this.MAX_ITEMS_PER_ROW = 6;
 
     AppLauncher.loadTheme(this.config.theme);
 
@@ -37,10 +34,30 @@ export default class AppLauncher {
       this.infoApp = new IframeApplication(this.config.appCfgs[this.config.infoApp]);
     }
 
+    this.overlay = new Overlay({
+      onShow: this.onOverlayShow.bind(this),
+      onClose: this.onOverlayClose.bind(this),
+    });
+    this.logo = this.createLogo();
+    this.appMenu = new AppMenu({
+      apps: this.apps,
+      iconsPerRow: this.config.iconsPerRow,
+      onAppClick: this.onAppMenuClick.bind(this),
+      lang: this.lang,
+    });
+    this.utilBar = new UtilBar({
+      langMenuShow: this.config.langMenuShow,
+      infoAppShow: !!this.infoApp,
+      onLangButton: this.onUtilLangButton.bind(this),
+      onInfoButton: this.onUtilInfoButton.bind(this),
+      onBackButton: this.onUtilBackButton.bind(this),
+    });
+    this.appArea = new AppArea();
+    this.inputMask = new InputMask();
+
     this.setTitle();
     this.setMenuMode();
     this.initResizeHandler();
-    this.enableUserInput();
   }
 
   /**
@@ -96,6 +113,33 @@ export default class AppLauncher {
   }
 
   /**
+   * Returns the localized value of a configuration item
+   *
+   * If the passed item is a string it's returned directly. If it's an object
+   * with language code as keys the most appropriate option is returned
+   * (the current language, 'default' or english)
+   *
+   * @param {string|object} item
+   *  A string or object with language codes as keys
+   * @return {*}
+   */
+  getLocalizedValue(item) {
+    if (typeof item === 'string') {
+      return item;
+    } else if (typeof item === 'object') {
+      if (item[this.lang] !== undefined) {
+        return item[this.lang];
+      } else if (item.default !== undefined) {
+        return item.default;
+      } else if (item.en !== undefined) {
+        return item.en;
+      }
+    }
+
+    return '';
+  }
+
+  /**
    * Sets the active language
    *
    * @param {string} langCode
@@ -104,9 +148,13 @@ export default class AppLauncher {
   setLang(langCode) {
     this.lang = langCode;
     this.setTitle();
-    $('.logo').replaceWith(this.renderLogo());
-    $('.menu-main').replaceWith(this.renderMainMenu());
-    this.resizeTitle();
+
+    const newLogo = this.createLogo();
+    this.logo.$element.replaceWith(newLogo.render());
+    this.logo = newLogo;
+    this.appMenu.props.lang = langCode;
+    this.appMenu.$element.replaceWith(this.appMenu.render());
+    this.logo.resize();
   }
 
   /**
@@ -123,14 +171,18 @@ export default class AppLauncher {
   /**
    * Language switch button handler
    */
-  onLangButton() {
-    this.showOverlay(this.renderLangMenu());
+  onUtilLangButton() {
+    const langMenu = new LangMenu({
+      items: this.config.langMenuItems,
+      onSelect: this.onLangMenuChoice.bind(this),
+    });
+    this.overlay.show(langMenu.render());
   }
 
   /**
    * Info button handler
    */
-  onInfoButton() {
+  onUtilInfoButton() {
     if (this.runningApp === this.infoApp) {
       return false;
     }
@@ -143,9 +195,9 @@ export default class AppLauncher {
    *
    * @return {boolean}
    */
-  onCloseButton() {
-    if (this.overlayVisible) {
-      this.closeOverlay();
+  onUtilBackButton() {
+    if (this.overlay.visible) {
+      this.overlay.close();
     } else {
       this.closeApp();
       this.setMenuMode();
@@ -160,7 +212,7 @@ export default class AppLauncher {
    *  The app config
    * @return {boolean}
    */
-  onAppButton(app) {
+  onAppMenuClick(app) {
     this.runApp(app);
     return false;
   }
@@ -172,12 +224,12 @@ export default class AppLauncher {
    *  The configuration of the app to run
    */
   runApp(app) {
-    this.disableUserInput();
+    this.inputMask.disableUserInput();
     this.closeApp();
     if (app.type === 'iframe') {
       this.setAppMode();
       if (app !== this.infoApp) {
-        this.displayTitle(app.getName(this.lang));
+        this.utilBar.displayTitle(app.getName(this.lang));
       }
     } else {
       this.setBlankMode();
@@ -188,10 +240,10 @@ export default class AppLauncher {
         this.closeApp();
         this.setMenuMode();
       });
-      app.run(this.appContainer, this.lang);
+      app.run(this.appArea.getContainer(), this.lang);
       this.setAppVisible(true);
       this.runningApp = app;
-      this.enableUserInput();
+      this.inputMask.enableUserInput();
     }, 500);
   }
 
@@ -201,8 +253,8 @@ export default class AppLauncher {
   closeApp() {
     this.setAppVisible(false);
     this.runningApp = null;
-    this.hideTitle();
-    $(this.appContainer).empty();
+    this.utilBar.hideTitle();
+    this.appArea.clear();
   }
 
   /**
@@ -216,17 +268,7 @@ export default class AppLauncher {
    * Sets the title
    */
   setTitle() {
-    if (typeof this.config.title === 'string') {
-      this.title = this.config.title;
-    } else if (typeof this.config.title === 'object') {
-      if (this.config.title[this.lang] !== undefined) {
-        this.title = this.config.title[this.lang];
-      } else {
-        // Defaults to english
-        this.title = this.config.title.en;
-      }
-    }
-    document.title = this.title;
+    document.title = this.getLocalizedValue(this.config.title);
   }
 
   /**
@@ -267,273 +309,33 @@ export default class AppLauncher {
     }
   }
 
-  /**
-   * Shows content on the overlay
-   *
-   * @param {string|Element|Array|jQuery} content
-   */
-  showOverlay(content) {
-    this.overlayVisible = true;
+  onOverlayShow() {
     this.setAppMode();
-    this.$body.addClass('overlay-visible');
-    this.$overlayContainer.append(content);
   }
 
-  /**
-   * Closes the overlay
-   */
-  closeOverlay() {
-    this.$body.removeClass('overlay-visible');
-    this.$overlayContainer.empty();
+  onOverlayClose() {
     if (this.runningApp === null) {
       this.setMenuMode();
     }
-    this.overlayVisible = false;
   }
 
   /**
-   * Sets the title and makes it visible
+   * Creates the logo
    *
-   * @param {string} aTitle
+   * @return {Logo}
    */
-  displayTitle(aTitle) {
-    this.$titlePane.text(aTitle);
-    this.$titlePane.addClass('visible');
-  }
-
-  /**
-   * Hides the title
-   */
-  hideTitle() {
-    this.$titlePane.removeClass('visible');
-  }
-
-  /**
-   * Disables user input
-   */
-  disableUserInput() {
-    this.$inputMask.show();
-  }
-
-  /**
-   * Enables user input
-   */
-  enableUserInput() {
-    this.$inputMask.hide();
-  }
-
-  /**
-   * Renders the utility bar
-   *
-   * @return {JQuery | jQuery | HTMLElement}
-   */
-  renderUtilBar() {
-    const utilBar = $('<div class="util-bar"></div>');
-
-    if (this.config.langMenuShow) {
-      utilBar.append(
-        $("<a class='util-button util-button-lang' href='#'><span class='fa fa-language'></span></a>")
-          .on('click', this.onLangButton.bind(this))
-      );
+  createLogo() {
+    const logoImgUrl = this.getLocalizedValue(this.config.logo);
+    if (logoImgUrl !== '') {
+      return new ImageLogo({
+        imgUrl: logoImgUrl,
+        onClick: this.onLogoClicked.bind(this),
+      });
     }
-
-    // Info button
-    if (this.infoApp) {
-      utilBar.append(
-        $("<a class='util-button util-button-info' href='#'><span class='fa fa-info-circle'></span></a>")
-          .on('click', this.onInfoButton.bind(this))
-      );
-    }
-
-    // Close button
-    utilBar.append(
-      $("<a class='util-button util-button-close' href='#'><span class='fa fa-arrow-left'></span></a>")
-        .on('click', this.onCloseButton.bind(this))
-    );
-
-    utilBar.append(this.$titlePane);
-
-    BrowserHelper.disableDrag(utilBar);
-
-    return utilBar;
-  }
-
-  /**
-   * Returns the number of icons to place per row
-   *
-   * The values are hardcoded and this function only works
-   * for 1-18 items
-   *
-   * @param {number} itemCount
-   *  Number of app icons to lay out
-   * @return {array}
-   */
-  static itemsPerRow6(itemCount) {
-    const layouts = {
-      1: [1],
-      2: [2],
-      3: [3],
-      4: [4],
-      5: [5],
-      6: [6],
-      7: [4, 3],
-      8: [4, 4],
-      9: [5, 4],
-      10: [5, 5],
-      11: [6, 5],
-      12: [6, 6],
-      13: [4, 5, 4],
-      14: [5, 4, 5],
-      15: [5, 5, 5],
-      16: [5, 6, 5],
-      17: [6, 5, 6],
-      18: [6, 6, 6],
-    };
-
-    return layouts[itemCount];
-  }
-
-  /**
-   * Returns the row layout to use for app icons
-   *
-   * The layout is returned as an array where each item
-   * is the number of icons to place in each row
-   *
-   * The distribution is calculated unless the configuration file specifies it explicitly.
-   *
-   * @param {number} itemCount
-   *  Number of icons
-   * @param maxItemsPerRow
-   *  Max number of items to place per row
-   * @return {Array}
-   */
-  itemsPerRow(itemCount, maxItemsPerRow) {
-    const itemsPerRow = [];
-
-    // If there's an applicable layout in the configuration, use it
-    if (this.config.iconsPerRow &&
-      Array.isArray(this.config.iconsPerRow) &&
-      this.config.iconsPerRow.length <= 3 &&
-      this.config.iconsPerRow.reduce((sum, a) => sum + a) === itemCount &&
-      Math.max.apply(null, this.config.iconsPerRow) <= maxItemsPerRow
-    ) {
-      return this.config.iconsPerRow;
-    }
-
-    // Hardwired handling
-    if (itemCount <= 18 && maxItemsPerRow === 6) {
-      return AppLauncher.itemsPerRow6(itemCount);
-    }
-
-    const rowCount = Math.ceil(itemCount / maxItemsPerRow);
-    let remainingItems = this.apps.length;
-    for (let i = 0; i !== rowCount; i += 1) {
-      const itemsInRow = Math.ceil(remainingItems / (rowCount - i));
-      itemsPerRow.push(itemsInRow);
-      remainingItems -= itemsInRow;
-    }
-
-    return itemsPerRow;
-  }
-
-  /**
-   * Renders the main menu
-   *
-   * @return {JQuery | jQuery | HTMLElement}
-   */
-  renderMainMenu() {
-    const mainMenu = $('<div class="menu-main"></div>');
-    const itemsPerRow = this.itemsPerRow(this.apps.length, this.MAX_ITEMS_PER_ROW);
-
-    let currApp = 0;
-    for (let i = 0; i !== itemsPerRow.length; i += 1) {
-      const newRow = $('<div class="menu-main-row"></div>');
-      newRow.addClass(`menu-main-row-${Math.max(...itemsPerRow)}`);
-      for (let j = 0; j !== itemsPerRow[i]; j += 1) {
-        newRow.append(this.renderMainMenuItem(this.apps[currApp]));
-        currApp += 1;
-      }
-      mainMenu.append(newRow);
-    }
-
-    return mainMenu;
-  }
-
-  /**
-   * Renders a menu item
-   *
-   * @param app
-   * @return {JQuery | jQuery}
-   */
-  renderMainMenuItem(app) {
-    const item = $('<a href="#" class="button menu-main-button"></a>')
-      .on('click', this.onAppButton.bind(this, app));
-
-    item.append($(`<img src="${app.getIcon()}" class="icon"></div>`));
-    item.append($(`<div class="name">${app.getName(this.lang)}</div>`));
-
-    BrowserHelper.disableDrag(item);
-
-    return item;
-  }
-
-  /**
-   * Renders the app container
-   *
-   * @return {JQuery | jQuery | HTMLElement}
-   */
-  renderAppContainer() {
-    const appContainer = $('<div class="appContainer"></div>');
-    this.appContainer = appContainer[0];
-    return appContainer;
-  }
-
-  /**
-   * Renders the logo
-   *
-   * @return {JQuery | jQuery}
-   */
-  renderLogo() {
-    const $logo = $("<a href='#' class='logo'></a>")
-      .on('click', this.onLogoClicked.bind(this));
-
-    if (this.config.logo !== undefined) {
-      if (typeof this.config.logo === 'string') {
-        this.logo = this.config.logo;
-      } else if (typeof this.config.logo === 'object') {
-        if (this.config.logo[this.lang] !== undefined) {
-          this.logo = this.config.logo[this.lang];
-        } else if (this.config.logo.default !== undefined) {
-          this.logo = this.config.logo.default;
-        }
-      }
-    }
-
-    if (this.logo !== '') {
-      $logo.css('background-image', `url(${this.logo})`);
-    } else {
-      // If there is no logo use the title
-      this.$logoText = $("<div class='logo-text'></div>").text(this.title);
-      $logo.append($("<div class='logo-text-wrapper'></div>").append(this.$logoText));
-    }
-
-    BrowserHelper.disableDrag($logo);
-
-    return $logo;
-  }
-
-  /**
-   * Renders the overlay container
-   *
-   * @return {JQuery | jQuery | HTMLElement}
-   */
-  renderOverlayContainer() {
-    const $overlay = $("<div class='overlay'></div>");
-    $overlay.append($("<div class='overlay-background'></div>"));
-    this.$overlayContainer = $("<div class='overlay-container'></div>");
-    $overlay.append(this.$overlayContainer);
-
-    return $overlay;
+    return new TextLogo({
+      text: this.getLocalizedValue(this.config.title),
+      onClick: this.onLogoClicked.bind(this),
+    });
   }
 
   /**
@@ -543,90 +345,16 @@ export default class AppLauncher {
    * @return {boolean}
    */
   onLangMenuChoice(code) {
-    this.closeOverlay();
+    this.overlay.close();
     this.setLang(code);
     return false;
-  }
-
-  /**
-   * Renders the language switch menu
-   *
-   * @return {JQuery | jQuery | HTMLElement}
-   */
-  renderLangMenu() {
-    const $menu = $("<ul class='menu-lang'></ul>");
-
-    // Count the regional variations of each language
-    const variations = {};
-    for (const langCode of this.config.langMenuItems) {
-      const langCodeParts = langCode.split('-');
-      variations[langCodeParts[0]] = (variations[langCodeParts[0]] || 0) + 1;
-    }
-
-    // Build the menu
-    for (const langCode of this.config.langMenuItems) {
-      const langCodeParts = langCode.split('-');
-      let itemText;
-      // Handle xx-xx and xx language codes separately
-      if (langCodeParts.length === 2) {
-        // For xx-xx languages we only show the country name if there
-        // is more than one variation of the language active in the configuration
-        const languageName =
-          languages.getLanguageInfo(langCodeParts[0]).nativeName || langCodeParts[0];
-        if (variations[langCodeParts[0]] > 1) {
-          const countryName =
-            (countries[langCodeParts[1].toUpperCase()] &&
-          countries[langCodeParts[1].toUpperCase()].native) || langCodeParts[1];
-          itemText = `${languageName} (${countryName})`;
-        } else {
-          itemText = languageName;
-        }
-      } else {
-        itemText = languages.getLanguageInfo(langCode).nativeName;
-      }
-
-      const $item = $('<li></li>');
-      const $link = $("<a href='#'></a>");
-      $link.text(itemText);
-      $link.on('click', this.onLangMenuChoice.bind(this, langCode));
-      $item.append($link);
-      $menu.append($item);
-    }
-
-    BrowserHelper.disableDrag($menu);
-
-    return $menu;
-  }
-
-  /**
-   * Resizes the title to fit the window size
-   */
-  resizeTitle() {
-    if (this.$logoText) {
-      const maxWidth = window.innerWidth * 0.9;
-      const maxHeight = window.innerHeight * 0.15;
-      const newScale = Math.min(
-        maxHeight / this.$logoText.outerHeight(),
-        maxWidth / this.$logoText.outerWidth(),
-        1
-      );
-
-      this.$logoText.css('transform', `scale(${newScale})`);
-    }
   }
 
   /**
    * Resize handler
    */
   onResize() {
-    this.resizeTitle();
-  }
-
-  /**
-   * Ready handler
-   */
-  onReady() {
-
+    this.logo.resize();
   }
 
   /**
@@ -635,21 +363,21 @@ export default class AppLauncher {
    * @return {JQuery | jQuery | HTMLElement}
    */
   render() {
-    const view = $("<div class='appLauncher'></div>");
-    const rowCount = Math.ceil(this.apps.length / this.MAX_ITEMS_PER_ROW);
-    view.addClass(`appLauncher-${rowCount}-rows`);
+    this.$element = $("<div class='appLauncher'></div>");
+    const rowCount = Math.ceil(this.apps.length / AppMenu.MAX_ITEMS_PER_ROW);
+    this.$element.addClass(`appLauncher-${rowCount}-rows`);
 
-    view.append(this.renderLogo());
-    view.append(this.renderMainMenu());
-    view.append($('<div class="appPane"></div>'));
-    view.append(this.renderAppContainer());
-    view.append(this.renderOverlayContainer());
-    view.append(this.renderUtilBar());
-    view.append(this.$inputMask);
+    this.$element.append(this.logo.render());
+    this.$element.append(this.appMenu.render());
+    this.$element.append(this.appArea.render());
+    this.$element.append(this.overlay.render());
+    this.$element.append(this.utilBar.render());
+    this.$element.append(this.inputMask.render());
 
-    return view;
+    return this.$element;
   }
 }
+
 
 AppLauncher.defaultCfg = {
   lang: 'en',

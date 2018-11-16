@@ -6,7 +6,8 @@ lang: en
 #
 # This title will be shown on top of the menu if no logo image is specified.
 # It's possible to specify a single string for all languages or to configure
-# each language separately.
+# each language separately. Use 'default' as a language code to have
+# a default fallback title.
 #
 title:
   en: Math to Touch
