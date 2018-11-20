@@ -15,8 +15,8 @@ export default class IframeApplicatione extends Application {
     window.IMAGINARY.CindyViewer.create(
       container,
       `${this.root}/${this.main}`,
-      this.width ? this.width : null,
-      this.height ? this.height : null,
+      this.width ? this.width : '100%',
+      this.height ? this.height : '100%',
       lang
     );
   }
