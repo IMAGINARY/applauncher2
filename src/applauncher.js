@@ -8,6 +8,7 @@ import Overlay from './components/overlay';
 import AppArea from './components/app-area';
 import InputMask from './components/input-mask';
 import AppMenu from './components/app-menu';
+import AppButton from "./components/app-button";
 
 /**
  * The main AppLauncher Application
@@ -18,36 +19,34 @@ export default class AppLauncher {
     this.$element = null;
     this.config = Object.assign({}, AppLauncher.defaultCfg, config);
     this.lang = this.config.lang;
-    this.apps = [];
     this.runningApp = null;
-    this.infoApp = this.config.infoApp ? this.config.infoApp : null;
 
     this.$body = $('body');
     this.$body.addClass('lock-position');
 
     AppLauncher.loadTheme(this.config.theme);
 
-    this.config.apps.forEach((appRoot, i) => {
-      this.apps[i] = AppLauncher.createApplication(this.config.appCfgs[appRoot]);
-    });
-    if (this.config.infoApp) {
-      this.infoApp = new IframeApplication(this.config.appCfgs[this.config.infoApp]);
-    }
-
     this.overlay = new Overlay({
       onShow: this.onOverlayShow.bind(this),
       onClose: this.onOverlayClose.bind(this),
     });
     this.logo = this.createLogo();
+
+    const appButtons = this.config.apps.map(appID => new AppButton({
+      appID,
+      name: this.getLocalizedValue(this.config.appCfgs[appID].name),
+      icon: `${this.config.appCfgs[appID].root}/icons/icon.png`,
+      onClick: this.onAppButtonClick.bind(this),
+    }));
+
     this.appMenu = new AppMenu({
-      apps: this.apps,
-      iconsPerRow: this.config.iconsPerRow,
-      onAppClick: this.onAppMenuClick.bind(this),
-      lang: this.lang,
+      appButtons,
+      buttonsPerRow: this.config.layout,
     });
+
     this.utilBar = new UtilBar({
       langMenuShow: this.config.langMenuShow,
-      infoAppShow: !!this.infoApp,
+      infoAppShow: !!this.config.infoApp,
       onLangButton: this.onUtilLangButton.bind(this),
       onInfoButton: this.onUtilInfoButton.bind(this),
       onBackButton: this.onUtilBackButton.bind(this),
@@ -183,10 +182,10 @@ export default class AppLauncher {
    * Info button handler
    */
   onUtilInfoButton() {
-    if (this.runningApp === this.infoApp) {
+    if ((this.runningApp !== null) && (this.runningApp.id === this.config.infoApp)) {
       return false;
     }
-    this.runApp(this.infoApp);
+    this.runApp(this.config.infoApp);
     return false;
   }
 
@@ -212,28 +211,33 @@ export default class AppLauncher {
    *  The app config
    * @return {boolean}
    */
-  onAppMenuClick(app) {
-    this.runApp(app);
+  onAppButtonClick(appID) {
+    this.runApp(appID);
     return false;
   }
 
   /**
    * Run an application
    *
-   * @param {object} app
-   *  The configuration of the app to run
+   * @param {string} appID
+   *  The id of the app to run
    */
-  runApp(app) {
+  runApp(appID) {
+    const appCfg = this.config.appCfgs[appID];
+    if (appCfg === undefined) {
+      throw new Error(`Tried to run non-existent app with ID ${appID}`);
+    }
     this.inputMask.disableUserInput();
     this.closeApp();
-    if (app.type === 'iframe') {
-      this.setAppMode();
-      if (app !== this.infoApp) {
-        this.utilBar.displayTitle(app.getName(this.lang));
+    if (appCfg.type === 'iframe') {
+      this.setTheaterMode();
+      if (appCfg.id !== this.config.infoApp) {
+        this.utilBar.displayTitle(this.getLocalizedValue(appCfg.name));
       }
     } else {
       this.setBlankMode();
     }
+    const app = AppLauncher.createApplication(appCfg);
     // Delay for fluid animation
     window.setTimeout(() => {
       app.once('close', () => {
@@ -273,6 +277,8 @@ export default class AppLauncher {
 
   /**
    * Sets the launcher mode to 'menu'
+   *
+   * Menu mode shows the main appLauncher menu
    */
   setMenuMode() {
     this.clearMode();
@@ -280,15 +286,19 @@ export default class AppLauncher {
   }
 
   /**
-   * Sets the launcher mode to 'app'
+   * Sets the launcher mode to 'theater'
+   *
+   * Theater mode has top and lower framing bars and a content area in the middle
    */
-  setAppMode() {
+  setTheaterMode() {
     this.clearMode();
     this.$body.addClass('mode-app');
   }
 
   /**
    * Sets the launcher mode to 'blank'
+   *
+   * Blank mode shows a blank black screen
    */
   setBlankMode() {
     this.clearMode();
@@ -310,7 +320,7 @@ export default class AppLauncher {
   }
 
   onOverlayShow() {
-    this.setAppMode();
+    this.setTheaterMode();
   }
 
   onOverlayClose() {
@@ -364,7 +374,7 @@ export default class AppLauncher {
    */
   render() {
     this.$element = $("<div class='appLauncher'></div>");
-    const rowCount = Math.ceil(this.apps.length / AppMenu.MAX_ITEMS_PER_ROW);
+    const rowCount = Math.ceil(this.config.apps.length / AppMenu.MAX_ITEMS_PER_ROW);
     this.$element.addClass(`appLauncher-${rowCount}-rows`);
 
     this.$element.append(this.logo.render());

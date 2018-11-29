@@ -3,7 +3,7 @@ import Application from './application';
 /**
  * Web applications that run in an iframe
  */
-export default class IframeApplicatione extends Application {
+export default class IframeApplication extends Application {
 
   constructor(config) {
     super(config);

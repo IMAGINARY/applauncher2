@@ -36,6 +36,20 @@ export default class AppLauncherLoader {
     return this.loadCfg()
       .then(cfg => this.loadAllAppCfgs(cfg)
           .then(appCfgs => Object.assign({}, cfg, { appCfgs })))
+      .then((cfg) => {
+        // The cfg references apps by their root directory,
+        // use the appID instead
+        const appsByRoot = {};
+        Object.values(cfg.appCfgs).forEach((app) => {
+          appsByRoot[app.root] = app.id;
+        });
+        const apps = cfg.apps.map(appRoot => appsByRoot[appRoot]);
+        const infoApp = appsByRoot[cfg.infoApp];
+        return Object.assign({}, cfg, {
+          apps,
+          infoApp,
+        });
+      })
       .catch((e) => {
         console.error(e);
         throw e;
@@ -112,7 +126,7 @@ export default class AppLauncherLoader {
     this.progressStep = (1 - this.progress) / apps.length;
     return Promise.map(apps, appRoot => this.loadAppCfg(appRoot)
       .then((appCfg) => {
-        allCfgs[appRoot] = appCfg;
+        allCfgs[appCfg.id] = appCfg;
         this.incrementProgress();
       })
     ).then(() => allCfgs);
@@ -126,6 +140,8 @@ export default class AppLauncherLoader {
    * @return {Promise<Object>}
    */
   loadAppCfg(appRoot) {
+    const defaultAppCfg = { type: 'iframe' };
+    const extraProperties = { root: appRoot };
     return superagent.get(`${appRoot}/app.json?cache=${Date.now()}`)
       .set('Accept', 'json')
       .then(({ body }) => {
@@ -134,7 +150,7 @@ export default class AppLauncherLoader {
         }
         return body;
       })
-      .then(cfg => Object.assign({ type: 'iframe' }, cfg, { root: appRoot }));
+      .then(cfg => Object.assign(defaultAppCfg, cfg, extraProperties));
   }
 }
 

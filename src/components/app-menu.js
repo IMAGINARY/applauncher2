@@ -1,5 +1,3 @@
-import AppIcon from './app-icon';
-
 export default class AppMenu {
   constructor(props) {
     this.$element = null;
@@ -7,21 +5,16 @@ export default class AppMenu {
   }
 
   render() {
-    const { apps, onAppClick, lang } = this.props;
+    const { appButtons } = this.props;
     this.$element = $('<div class="menu-main"></div>');
-    const itemsPerRow = this.iconsPerRow(apps.length, AppMenu.MAX_ITEMS_PER_ROW);
+    const buttonsPerRow = this.layout(appButtons.length, AppMenu.MAX_ITEMS_PER_ROW);
 
     let currApp = 0;
-    for (let i = 0; i !== itemsPerRow.length; i += 1) {
+    for (let i = 0; i !== buttonsPerRow.length; i += 1) {
       const newRow = $('<div class="menu-main-row"></div>');
-      newRow.addClass(`menu-main-row-${Math.max(...itemsPerRow)}`);
-      for (let j = 0; j !== itemsPerRow[i]; j += 1) {
-        const icon = new AppIcon({
-          app: apps[currApp],
-          onClick: onAppClick,
-          lang,
-        });
-        newRow.append(icon.render());
+      newRow.addClass(`menu-main-row-${Math.max(...buttonsPerRow)}`);
+      for (let j = 0; j !== buttonsPerRow[i]; j += 1) {
+        newRow.append(appButtons[currApp].render());
         currApp += 1;
       }
       this.$element.append(newRow);
@@ -44,18 +37,18 @@ export default class AppMenu {
    *  Max number of items to place per row
    * @return {Array}
    */
-  iconsPerRow(itemCount, maxItemsPerRow) {
+  layout(itemCount, maxItemsPerRow) {
     const itemsPerRow = [];
-    const { apps, iconsPerRow } = this.props;
+    const { appButtons, buttonsPerRow } = this.props;
 
     // If there's an applicable layout in the configuration, use it
-    if (iconsPerRow &&
-      Array.isArray(iconsPerRow) &&
-      iconsPerRow.length <= 3 &&
-      iconsPerRow.reduce((sum, a) => sum + a) === itemCount &&
-      Math.max.apply(null, iconsPerRow) <= maxItemsPerRow
+    if (buttonsPerRow &&
+      Array.isArray(buttonsPerRow) &&
+      buttonsPerRow.length <= 3 &&
+      buttonsPerRow.reduce((sum, a) => sum + a) === itemCount &&
+      Math.max.apply(null, buttonsPerRow) <= maxItemsPerRow
     ) {
-      return iconsPerRow;
+      return buttonsPerRow;
     }
 
     // Hardwired handling
@@ -64,7 +57,7 @@ export default class AppMenu {
     }
 
     const rowCount = Math.ceil(itemCount / maxItemsPerRow);
-    let remainingItems = apps.length;
+    let remainingItems = appButtons.length;
     for (let i = 0; i !== rowCount; i += 1) {
       const itemsInRow = Math.ceil(remainingItems / (rowCount - i));
       itemsPerRow.push(itemsInRow);
