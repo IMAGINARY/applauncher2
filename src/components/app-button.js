@@ -11,7 +11,8 @@ export default class AppButton {
     this.$element = $('<a href="#" class="button menu-main-button"></a>')
       .on('click', () => { onClick(appID); });
 
-    this.$element.append($(`<img src="${icon}" class="icon"></div>`));
+    this.$element.append($(`<img src="${icon}" class="icon"></div>`)
+      .on('error', (ev) => { ev.target.src = 'assets/img/icon_fallback.png'; }));
     this.$element.append($(`<div class="name">${name}</div>`));
 
     BrowserHelper.disableDrag(this.$element);
