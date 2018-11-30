@@ -33,7 +33,7 @@ export default class AppLauncher {
     });
     this.logo = this.createLogo();
 
-    const appButtons = this.config.apps.map(appID => new AppButton({
+    this.appButtons = this.config.apps.map(appID => new AppButton({
       appID,
       name: this.getLocalizedValue(this.config.appCfgs[appID].name),
       icon: `${this.config.appCfgs[appID].root}/icons/icon.png`,
@@ -41,7 +41,7 @@ export default class AppLauncher {
     }));
 
     this.appMenu = new AppMenu({
-      appButtons,
+      appButtons: this.appButtons,
       buttonsPerRow: this.config.layout,
     });
 
@@ -152,8 +152,11 @@ export default class AppLauncher {
     const newLogo = this.createLogo();
     this.logo.$element.replaceWith(newLogo.render());
     this.logo = newLogo;
-    this.appMenu.props.lang = langCode;
-    this.appMenu.$element.replaceWith(this.appMenu.render());
+
+    this.appButtons.forEach((button) => {
+      button.setName(this.getLocalizedValue(this.config.appCfgs[button.props.appID].name));
+    });
+
     this.logo.resize();
   }
 

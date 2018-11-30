@@ -4,6 +4,13 @@ export default class AppButton {
   constructor(props) {
     this.$element = null;
     this.props = props;
+    this.$nameContainer = null;
+  }
+
+  setName(name) {
+    if (this.$nameContainer) {
+      this.$nameContainer.text(name);
+    }
   }
 
   render() {
@@ -13,7 +20,9 @@ export default class AppButton {
 
     this.$element.append($(`<img src="${icon}" class="icon"></div>`)
       .on('error', (ev) => { ev.target.src = 'assets/img/icon_fallback.png'; }));
-    this.$element.append($(`<div class="name">${name}</div>`));
+
+    this.$nameContainer = $(`<div class="name">${name}</div>`);
+    this.$element.append(this.$nameContainer);
 
     BrowserHelper.disableDrag(this.$element);
 
