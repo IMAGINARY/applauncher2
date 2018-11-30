@@ -8,7 +8,8 @@ import Overlay from './components/overlay';
 import AppArea from './components/app-area';
 import InputMask from './components/input-mask';
 import AppMenu from './components/app-menu';
-import AppButton from "./components/app-button";
+import AppButton from './components/app-button';
+import runExecutableApp from './helpers/run-executable-app';
 
 /**
  * The main AppLauncher Application
@@ -245,6 +246,11 @@ export default class AppLauncher {
         this.setMenuMode();
       });
       app.run(this.appArea.getContainer(), this.lang);
+      // To do: this code has to be integrated better
+      if (appCfg.type === 'iframe' && appCfg.enableExecution) {
+        $(this.appArea.getContainer()).find('iframe')[0].contentWindow.parentRunExecutableApp = runExecutableApp;
+      }
+      // end to do
       this.setAppVisible(true);
       this.runningApp = app;
       this.inputMask.enableUserInput();

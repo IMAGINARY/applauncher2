@@ -29,6 +29,9 @@
     "height": {
       "type": "number"
     },
+    "enableExecution": {
+      "type": "boolean"
+    },
     "args": {
       "type": "array",
       "items": {

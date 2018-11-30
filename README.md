@@ -87,6 +87,11 @@ It can be a path or an absolute url.
 resolution and zoomed (in or out) to fit into the window. If not specified the app will run at the resolution
 of the frame where it's launched (which might be very small, very large, or change during execution).
 
+- **enableExecution**: (Optional) Set to true for apps that are actually an appLauncher2 instance and require
+launching executable apps. Electron doesn't allow node.js code run in iframes, so executable apps can't be
+launcehd from iframed appLaunchers. This setting provides appLauncher with a hook to execute in the parent
+window context.
+
 #### executable apps
 
 - **main**: Command to run. The process should stay alive until it's time for the menu to regain control.
