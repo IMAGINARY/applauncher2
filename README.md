@@ -109,6 +109,12 @@ through this setting.
 - **shell** (Optional, default: false) If `true` the command will be run in the default shell. 
 A different shell can also be specified as a string. If `false` the command is run without a shell.
 
+## API
+
+Iframe apps have access to an API that allows them to execute operations and get information from the host
+appLauncher. API methods and properties are accesible through `window.IMAGINARY.AppLauncher`, 
+check `src/applauncher-api.js` for documentation.
+
 ## Themes
 
 Themes allow overriding default CSS styles and images. Each theme has a directory inside `themes` where its

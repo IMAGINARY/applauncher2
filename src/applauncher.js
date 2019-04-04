@@ -10,6 +10,7 @@ import InputMask from './components/input-mask';
 import AppMenu from './components/app-menu';
 import AppButton from './components/app-button';
 import runExecutableApp from './helpers/run-executable-app';
+import AppLauncherWebAPI from "./applauncher-api";
 
 /**
  * The main AppLauncher Application
@@ -103,9 +104,9 @@ export default class AppLauncher {
    *  The app's configuration
    * @return {Application}
    */
-  static createApplication(appConfig) {
+  createApplication(appConfig) {
     if (appConfig.type === 'iframe') {
-      return new IframeApplication(appConfig);
+      return new IframeApplication(appConfig, new AppLauncherWebAPI(this));
     } else if (appConfig.type === 'executable') {
       return new ExecutableApplication(appConfig);
     }
@@ -241,7 +242,7 @@ export default class AppLauncher {
     } else {
       this.setBlankMode();
     }
-    const app = AppLauncher.createApplication(appCfg);
+    const app = this.createApplication(appCfg);
     // Delay for fluid animation
     window.setTimeout(() => {
       app.once('close', () => {
@@ -249,7 +250,7 @@ export default class AppLauncher {
         this.setMenuMode();
       });
       app.run(this.appArea.getContainer(), this.lang);
-      // To do: this code has to be integrated better
+      // To do: this code has to be integrated better. Deprecate and use the API.
       if (appCfg.type === 'iframe' && appCfg.enableExecution) {
         $(this.appArea.getContainer()).find('iframe')[0].contentWindow.parentRunExecutableApp = runExecutableApp;
       }

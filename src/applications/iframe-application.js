@@ -5,10 +5,11 @@ import Application from './application';
  */
 export default class IframeApplication extends Application {
 
-  constructor(config) {
+  constructor(config, api) {
     super(config);
     this.width = config.width;
     this.height = config.height;
+    this.api = api;
   }
 
   run(container, lang = 'en') {
@@ -19,5 +20,10 @@ export default class IframeApplication extends Application {
       this.height ? this.height : '100%',
       lang
     );
+    const innerWindow = $(container).find('iframe')[0].contentWindow;
+    if (innerWindow.IMAGINARY === undefined) {
+      innerWindow.IMAGINARY = {};
+    }
+    innerWindow.IMAGINARY.AppLauncher = this.api;
   }
 }
