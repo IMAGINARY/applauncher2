@@ -43,7 +43,7 @@ export default class AppLauncher {
 
     this.appMenu = new AppMenu({
       appButtons: this.appButtons,
-      buttonsPerRow: this.config.layout,
+      buttonsPerRow: this.config.iconsPerRow,
     });
 
     this.utilBar = new UtilBar({
