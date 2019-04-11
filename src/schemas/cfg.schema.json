@@ -33,6 +33,10 @@
         "minimum": 1
       }
     },
+    "maxIconsPerRow": {
+      "type": "integer",
+      "minimum": 1
+    },
     "langMenuShow": {
       "type": "boolean"
     },

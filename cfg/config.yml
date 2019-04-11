@@ -80,6 +80,15 @@ infoApp: https://imaginary.github.io/cindyjs-apps/info
 #
 # iconsPerRow: [3, 5, 6]
 
+
+#
+# Max icons per row
+# Maximum number of icons per row. If you change the default you might need to
+# do CSS tweaking (possibly major) to maintain correct rendering with variable
+# numbers of icons.
+# (default: 6)
+# maxIconsPerRow: 6
+
 #
 # Show language switcher menu (true/false)
 #

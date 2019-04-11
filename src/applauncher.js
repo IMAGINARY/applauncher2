@@ -10,7 +10,7 @@ import InputMask from './components/input-mask';
 import AppMenu from './components/app-menu';
 import AppButton from './components/app-button';
 import runExecutableApp from './helpers/run-executable-app';
-import AppLauncherWebAPI from "./applauncher-api";
+import AppLauncherWebAPI from './applauncher-api';
 
 /**
  * The main AppLauncher Application
@@ -44,6 +44,7 @@ export default class AppLauncher {
     this.appMenu = new AppMenu({
       appButtons: this.appButtons,
       buttonsPerRow: this.config.iconsPerRow,
+      maxIconsPerRow: this.config.maxIconsPerRow,
     });
 
     this.utilBar = new UtilBar({
@@ -384,7 +385,7 @@ export default class AppLauncher {
    */
   render() {
     this.$element = $("<div class='appLauncher'></div>");
-    const rowCount = Math.ceil(this.config.apps.length / AppMenu.MAX_ITEMS_PER_ROW);
+    const rowCount = Math.ceil(this.config.apps.length / this.config.maxIconsPerRow);
     this.$element.addClass(`appLauncher-${rowCount}-rows`);
 
     this.$element.append(this.logo.render());
@@ -404,4 +405,5 @@ AppLauncher.defaultCfg = {
   title: 'IMAGINARY',
   langMenuShow: false,
   theme: 'default',
+  maxIconsPerRow: 6,
 };
