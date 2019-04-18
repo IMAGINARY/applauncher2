@@ -9,7 +9,7 @@ export default class AppButton {
 
   setName(name) {
     if (this.$nameContainer) {
-      this.$nameContainer.text(name);
+      this.$nameContainer.html(name);
     }
   }
 
