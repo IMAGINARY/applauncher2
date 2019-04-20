@@ -54,6 +54,21 @@ export default class AppLauncher {
     this.$body = $('body');
     this.$body.addClass('lock-position');
 
+    this.events.on('appInit', ({ cfg }) => {
+      this.$body.removeClass('app-running');
+      this.$body.addClass('app-init');
+    });
+
+    this.events.on('appStart', ({ cfg }) => {
+      this.$body.removeClass('app-init');
+      this.$body.addClass('app-running');
+    });
+
+    this.events.on('appEnd', ({ cfg }) => {
+      this.$body.removeClass('app-init');
+      this.$body.removeClass('app-running');
+    });
+
     this.overlay = new Overlay({
       onShow: this.onOverlayShow.bind(this),
       onClose: this.onOverlayClose.bind(this),
