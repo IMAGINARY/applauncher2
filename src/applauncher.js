@@ -1,5 +1,8 @@
+import EventEmitter from 'events';
+import isAbsoluteUrl from 'is-absolute-url';
 import IframeApplication from './applications/iframe-application';
 import ExecutableApplication from './applications/executable-application';
+import RemoteApplication from './applications/remote-application';
 import UtilBar from './components/util-bar';
 import ImageLogo from './components/logo-img';
 import TextLogo from './components/logo-text';
@@ -9,8 +12,30 @@ import AppArea from './components/app-area';
 import InputMask from './components/input-mask';
 import AppMenu from './components/app-menu';
 import AppButton from './components/app-button';
-import runExecutableApp from './helpers/run-executable-app';
 import AppLauncherWebAPI from './applauncher-api';
+
+
+/**
+ * appInit event
+ *  Fired when an app is initialized before opening
+ * @event AppLauncher#appInit
+ * @type {object}
+ * @property {object} cfg The configuration of the app being initialized
+ */
+/**
+ * appStart event
+ *  Fired when an app starts
+ * @event AppLauncher#appStart
+ * @type {object}
+ * @property {object} cfg The configuration of the app that is now running
+ */
+/**
+ * appEnd event
+ *  Fired when an app is closed
+ * @event AppLauncher#appEnd
+ * @type {object}
+ * @property {object} cfg The configuration of the app closed
+ */
 
 /**
  * The main AppLauncher Application
@@ -18,15 +43,15 @@ import AppLauncherWebAPI from './applauncher-api';
 export default class AppLauncher {
 
   constructor(config) {
+    this.events = new EventEmitter();
     this.$element = null;
     this.config = Object.assign({}, AppLauncher.defaultCfg, config);
     this.lang = this.config.lang;
     this.runningApp = null;
+    this.remoteLaunchers = {};
 
     this.$body = $('body');
     this.$body.addClass('lock-position');
-
-    AppLauncher.loadTheme(this.config.theme);
 
     this.overlay = new Overlay({
       onShow: this.onOverlayShow.bind(this),
@@ -40,6 +65,16 @@ export default class AppLauncher {
       icon: `${this.config.appCfgs[appID].root}/icons/icon.png`,
       onClick: this.onAppButtonClick.bind(this),
     }));
+
+    this.events.on('appInit', ({ cfg }) => {
+      this.appButtons.find(({ props }) => props.appID === cfg.id).setInitializing();
+    });
+    this.events.on('appStart', ({ cfg }) => {
+      this.appButtons.find(({ props }) => props.appID === cfg.id).setStarted();
+    });
+    this.events.on('appEnd', ({ cfg }) => {
+      this.appButtons.find(({ props }) => props.appID === cfg.id).setClosed();
+    });
 
     this.appMenu = new AppMenu({
       appButtons: this.appButtons,
@@ -84,16 +119,60 @@ export default class AppLauncher {
   }
 
   /**
+   * Loads all plugins defined in the configuration.
+   *
+   * Adds the stylesheets and scripts defined in plugins in the
+   * page header. Returns a promise that resolves once every plugin
+   * script has finished loading.
+   *
+   * @return {Promise<any[]>}
+   */
+  loadPlugins() {
+    const loadHandlers = [];
+
+    this.config.pluginCfgs.forEach((cfg) => {
+      cfg.stylesheets.forEach((stylesheet) => {
+        const url = isAbsoluteUrl(stylesheet) ? stylesheet : `${cfg.root}/${stylesheet}`;
+        const $linkElement = $('<link>');
+        $linkElement.attr('rel', 'stylesheet');
+        $linkElement.attr('type', 'text/css');
+        $linkElement.attr('href', url);
+        $linkElement.appendTo('head');
+      });
+    });
+
+    this.config.pluginCfgs.forEach((cfg) => {
+      cfg.scripts.forEach((script) => {
+        loadHandlers.push(new Promise((accept, reject) => {
+          const url = isAbsoluteUrl(script) ? script : `${cfg.root}/${script}`;
+          const $scriptElement = $('<script>');
+          $scriptElement.attr('type', 'text/javascript');
+          $scriptElement.on('load', () => {
+            accept();
+          });
+          $scriptElement.on('error', () => {
+            reject(new Error(`Error loading '${url}' from plugin '${cfg.id}'`));
+          });
+          $scriptElement.appendTo('head');
+          $scriptElement.attr('src', url);
+        }));
+      });
+    });
+
+    return Promise.all(loadHandlers);
+  }
+
+  /**
    * Loads and activates a theme
    *
    * @param {string} themeName
    */
-  static loadTheme(themeName) {
-    if (themeName !== undefined) {
+  loadTheme() {
+    if (this.config.theme !== undefined) {
       const $themeCSSFile = $('<link>');
       $themeCSSFile.attr('rel', 'stylesheet');
       $themeCSSFile.attr('type', 'text/css');
-      $themeCSSFile.attr('href', `themes/${themeName}/default.css`);
+      $themeCSSFile.attr('href', `themes/${this.config.theme}/default.css`);
       $themeCSSFile.appendTo('head');
     }
   }
@@ -107,11 +186,30 @@ export default class AppLauncher {
    */
   createApplication(appConfig) {
     if (appConfig.type === 'iframe') {
-      return new IframeApplication(appConfig, new AppLauncherWebAPI(this));
+      return new IframeApplication(appConfig, this);
     } else if (appConfig.type === 'executable') {
-      return new ExecutableApplication(appConfig);
+      return new ExecutableApplication(appConfig, this);
+    } else if (appConfig.type === 'remote') {
+      return new RemoteApplication(appConfig, this);
     }
     throw new Error(`Unknown application type : ${appConfig.type}`);
+  }
+
+  getWebAPI() {
+    return new AppLauncherWebAPI(this);
+  }
+
+  /**
+   * Registers a remote launcher
+   *
+   * @param {string} id
+   *  The id used to reference this launcher
+   * @param {object} launcher
+   *  A launcher object. See `sample-remote-launcher.js`
+   */
+  registerRemoteLauncher(id, launcher) {
+    this.remoteLaunchers[id] = launcher;
+    launcher.init(this);
   }
 
   /**
@@ -177,6 +275,7 @@ export default class AppLauncher {
    * Language switch button handler
    */
   onUtilLangButton() {
+    this.closeApp();
     const langMenu = new LangMenu({
       items: this.config.langMenuItems,
       onSelect: this.onLangMenuChoice.bind(this),
@@ -227,6 +326,9 @@ export default class AppLauncher {
    *
    * @param {string} appID
    *  The id of the app to run
+   * @fires AppLauncher#appInit
+   * @fires AppLauncher#appStart
+   * @fires AppLauncher#appEnd
    */
   runApp(appID) {
     const appCfg = this.config.appCfgs[appID];
@@ -235,29 +337,18 @@ export default class AppLauncher {
     }
     this.inputMask.disableUserInput();
     this.closeApp();
-    if (appCfg.type === 'iframe') {
-      this.setTheaterMode();
-      if (appCfg.id !== this.config.infoApp) {
-        this.utilBar.displayTitle(this.getLocalizedValue(appCfg.name));
-      }
-    } else {
-      this.setBlankMode();
-    }
-    const app = this.createApplication(appCfg);
+    const app = this.createApplication(appCfg, this);
+    app.init();
+    this.events.emit('appInit', { cfg: appCfg });
     // Delay for fluid animation
     window.setTimeout(() => {
       app.once('close', () => {
-        this.closeApp();
-        this.setMenuMode();
+        this.runningApp = null;
+        this.events.emit('appEnd', { cfg: appCfg });
       });
-      app.run(this.appArea.getContainer(), this.lang);
-      // To do: this code has to be integrated better. Deprecate and use the API.
-      if (appCfg.type === 'iframe' && appCfg.enableExecution) {
-        $(this.appArea.getContainer()).find('iframe')[0].contentWindow.parentRunExecutableApp = runExecutableApp;
-      }
-      // end to do
-      this.setAppVisible(true);
+      app.run(this.lang);
       this.runningApp = app;
+      this.events.emit('appStart', { cfg: appCfg });
       this.inputMask.enableUserInput();
     }, 500);
   }
@@ -266,10 +357,9 @@ export default class AppLauncher {
    * Close the active app
    */
   closeApp() {
-    this.setAppVisible(false);
-    this.runningApp = null;
-    this.utilBar.hideTitle();
-    this.appArea.clear();
+    if (this.runningApp !== null) {
+      this.runningApp.close();
+    }
   }
 
   /**
@@ -300,20 +390,26 @@ export default class AppLauncher {
    * Sets the launcher mode to 'theater'
    *
    * Theater mode has top and lower framing bars and a content area in the middle
+   *
+   * @return {HTMLDivElement} appArea container DOM Element
    */
   setTheaterMode() {
     this.clearMode();
     this.$body.addClass('mode-app');
+    return this.appArea.getContainer();
   }
 
   /**
    * Sets the launcher mode to 'blank'
    *
    * Blank mode shows a blank black screen
+   *
+   * @return {HTMLDivElement} appArea container DOM Element
    */
   setBlankMode() {
     this.clearMode();
     this.$body.addClass('mode-blank');
+    return this.appArea.getContainer();
   }
 
   /**

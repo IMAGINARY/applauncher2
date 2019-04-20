@@ -35,6 +35,12 @@ title:
 #   de: assets/img/lg_imaginary_white.png
 
 #
+# Plug-ins to load
+#
+# plugins:
+#  - plugins/my-plugin
+
+#
 # Name of the theme to use.
 # Available themes: default, blue, green.
 # See more info about defining new themes in the README.md file.

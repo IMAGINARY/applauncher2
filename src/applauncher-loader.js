@@ -5,6 +5,7 @@ import yaml from 'js-yaml';
 import BrowserHelper from './helpers/browser-helper';
 import cfgSchema from './schemas/cfg.schema.json';
 import appCfgSchema from './schemas/appcfg.schema.json';
+import pluginCfgSchema from './schemas/plugincfg.schema.json';
 
 /**
  * Loader of config files used to initialize AppLauncher
@@ -20,6 +21,7 @@ export default class AppLauncherLoader {
     this.ajv = new Ajv();
     this.validateCfg = this.ajv.compile(cfgSchema);
     this.validateAppCfg = this.ajv.compile(appCfgSchema);
+    this.validatePluginCfg = this.ajv.compile(pluginCfgSchema);
   }
 
   /**
@@ -50,6 +52,9 @@ export default class AppLauncherLoader {
           infoApp,
         });
       })
+      .then(cfg => this.loadAllPluginCfgs(cfg).then(
+          pluginCfgs => Object.assign({}, cfg, { pluginCfgs })
+      ))
       .catch((e) => {
         console.error(e);
         throw e;
@@ -123,10 +128,31 @@ export default class AppLauncherLoader {
 
     const apps = cfg.apps.concat(cfg.infoApp ? cfg.infoApp : []);
 
-    this.progressStep = (1 - this.progress) / apps.length;
+    this.progressStep = (1 - (this.progress + 0.25)) / Math.max(apps.length, 1);
     return Promise.map(apps, appRoot => this.loadAppCfg(appRoot)
       .then((appCfg) => {
         allCfgs[appCfg.id] = appCfg;
+        this.incrementProgress();
+      })
+    ).then(() => allCfgs);
+  }
+
+  /**
+   * Loads all plugin cfgs (plugin.json files) specified in the main config
+   *
+   * @param {Object} cfg
+   *  The main appLauncher config
+   * @return {Promise<Object>}
+   */
+  loadAllPluginCfgs(cfg) {
+    const allCfgs = [];
+
+    const plugins = cfg.plugins ? cfg.plugins : [];
+
+    this.progressStep = (1 - this.progress) / Math.max(plugins.length, 1);
+    return Promise.map(plugins, pluginRoot => this.loadPluginCfg(pluginRoot)
+      .then((pluginCfg) => {
+        allCfgs.push(pluginCfg);
         this.incrementProgress();
       })
     ).then(() => allCfgs);
@@ -151,6 +177,23 @@ export default class AppLauncherLoader {
         return body;
       })
       .then(cfg => Object.assign(defaultAppCfg, cfg, extraProperties));
+  }
+
+  loadPluginCfg(pluginRoot) {
+    const defaultPluginCfg = {
+      root: pluginRoot,
+      scripts: [],
+      stylesheets: [],
+    };
+    return superagent.get(`${pluginRoot}/plugin.json?cache=${Date.now()}`)
+      .set('Accept', 'json')
+      .then(({ body }) => {
+        if (!this.validatePluginCfg(body)) {
+          throw new Error(`Error in ${pluginRoot}/plugin.json: ${this.ajv.errorsText(this.validatePluginCfg.errors)}`);
+        }
+        return body;
+      })
+      .then(cfg => Object.assign(defaultPluginCfg, cfg));
   }
 }
 

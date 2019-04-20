@@ -13,9 +13,24 @@ export default class AppButton {
     }
   }
 
+  setInitializing() {
+    this.$element.removeClass('running');
+    this.$element.addClass('initializing');
+  }
+
+  setStarted() {
+    this.$element.removeClass('initializing');
+    this.$element.addClass('running');
+  }
+
+  setClosed() {
+    this.$element.removeClass('running');
+  }
+
   render() {
     const { appID, name, icon, onClick } = this.props;
     this.$element = $('<a href="#" class="button menu-main-button"></a>')
+      .attr('data-app-id', appID)
       .on('click', () => { onClick(appID); });
 
     this.$element.append($(`<img src="${icon}" class="icon"></div>`)

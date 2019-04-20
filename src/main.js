@@ -23,9 +23,16 @@ $(() => {
     loaderView.showError(e.message);
     throw e;
   }).then((cfg) => {
-    loaderView.$element.remove();
     const appLauncher = new AppLauncher(cfg);
     window.IMAGINARY.AppLauncher = appLauncher;
+    return appLauncher.loadPlugins()
+      .then(() => appLauncher)
+      .catch((e) => {
+        loaderView.showError(e.message);
+      });
+  }).then((appLauncher) => {
+    appLauncher.loadTheme();
+    loaderView.$element.remove();
     $('body').append(appLauncher.render());
     appLauncher.onResize();
   });

@@ -72,11 +72,13 @@ future. A single string can be specified or an object where each key is a langua
 translated description. A default description in english (`en`) should always be provided. 
 
 - **type**: (Optional, default: 'iframe') Type of application. Either 'iframe' for launching a web application in
-an iframe or 'executable' for launching an external process. 
+an iframe, 'executable' for launching an external process or 'remote' to use a remote launcher (see below). 
  
 Extra options can be set depending on the **type** of application.
 
 #### iframe apps
+
+These are web apps that will be launched inside an iframe within the appLauncher. 
 
 iframe apps can have the following keys:
 
@@ -94,6 +96,9 @@ window context.
 
 #### executable apps
 
+These are OS-level executable programs (can only be launched when running appLauncher within the electron 
+browser).
+
 - **main**: Command to run. The process should stay alive until it's time for the menu to regain control.
 Note also that the program launched should provide the user for some mechanism to end the process and exit 
 back to the menu.
@@ -109,6 +114,12 @@ through this setting.
 - **shell** (Optional, default: false) If `true` the command will be run in the default shell. 
 A different shell can also be specified as a string. If `false` the command is run without a shell.
 
+#### remote apps
+
+These are apps handled by a "Remote Launcher" registered by a Plug-In (see `sample-remote-launcher.js`). 
+
+- **main**: ID of the remote launcher to call.
+
 ## API
 
 Iframe apps have access to an API that allows them to execute operations and get information from the host
@@ -122,6 +133,28 @@ Themes allow overriding default CSS styles and images. Each theme has a director
 `default.css` file will be loaded dynamically when the appLauncher starts.
 
 Note that the theme CSS files are precompiled from SASS files placed in `sass/themes/<theme name>`.
+
+## Plugins
+
+Plugins allow injecting JS and CSS into the AppLauncher. Put plugins in the `plugins` directory. Each
+plugin should have a directory and a `plugin.js` file with the following format:
+
+```
+{
+  "id":  "my-plugin-id",
+  "version": "v1.0",
+  "scripts": [
+    "js/path-to-js-file.js"
+  ],
+  "stylesheets": [
+    "css/path-to-css-file.css"
+  ]
+}
+```
+
+Both `scripts` and `stylesheets` are optional arrays. Each script and stylesheet specified will get loaded after
+the AppLauncher is built. Plugins can interact with the AppLauncher through the `IMAGINARY.AppLauncher` global 
+object and the events published through `IMAGINARY.AppLauncher.events`.
 
 ## Compilation
 

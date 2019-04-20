@@ -7,12 +7,16 @@ import runExecutableApp from '../helpers/run-executable-app';
  */
 export default class ExecutableApplication extends Application {
 
-  constructor(config) {
-    super(config);
+  constructor(config, appLauncher) {
+    super(config, appLauncher);
     this.config = config;
   }
 
-  run(container, lang = 'en') {
+  init() {
+    this.appLauncher.setBlankMode();
+  }
+
+  run(lang = 'en') {
     runExecutableApp(this.config, lang)
       .then(() => {
         this.close();
@@ -21,5 +25,9 @@ export default class ExecutableApplication extends Application {
         console.error(err);
         window.setTimeout(() => this.close(), 2000);
       });
+  }
+
+  doClose() {
+    this.appLauncher.setMenuMode();
   }
 }
