@@ -3471,6 +3471,16 @@ body {
     transition: top 0.5s 0.2s;
     opacity: 1; }
 
+.info-text {
+  position: absolute;
+  bottom: 3vh;
+  width: 75vw;
+  left: 12.5vw;
+  text-align: center;
+  font-size: 2.5vmin;
+  line-height: 3vmin;
+  text-transform: uppercase; }
+
 body {
   transition: background-color 1s; }
 
@@ -3510,6 +3520,9 @@ body {
 .util-button-info {
   transition: opacity 0.5s, visibility 0s linear; }
 
+.info-text {
+  transition: opacity 0.5s, visibility 0s linear; }
+
 .overlay {
   max-height: 0; }
   .overlay .overlay-background {
@@ -3535,6 +3548,10 @@ body.mode-menu .util-button-lang {
   visibility: visible;
   transition: opacity 0.5s, visibility 0s linear 0s; }
 
+body.mode-menu .info-text {
+  opacity: 1;
+  visibility: visible; }
+
 body.mode-app {
   background-color: #121a1e; }
   body.mode-app .logo {
@@ -3554,6 +3571,8 @@ body.mode-app {
     opacity: 1; }
   body.mode-app .appContainer {
     display: block; }
+  body.mode-app .info-text {
+    opacity: 0; }
   body.mode-app .util-button-close {
     margin-top: 0; }
 
@@ -3576,6 +3595,8 @@ body.mode-blank {
     opacity: 1; }
   body.mode-blank .appContainer {
     display: block; }
+  body.mode-blank .info-text {
+    opacity: 0; }
 
 body.app-visible .appContainer {
   opacity: 1; }

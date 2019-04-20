@@ -26,6 +26,9 @@
     "infoApp": {
       "type": "string"
     },
+    "infoText": {
+      "$ref": "#/definitions/localizableString"
+    },
     "iconsPerRow": {
       "type": "array",
       "items": {

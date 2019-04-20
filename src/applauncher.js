@@ -13,6 +13,7 @@ import InputMask from './components/input-mask';
 import AppMenu from './components/app-menu';
 import AppButton from './components/app-button';
 import AppLauncherWebAPI from './applauncher-api';
+import InfoText from './components/info-text';
 
 
 /**
@@ -67,13 +68,22 @@ export default class AppLauncher {
     }));
 
     this.events.on('appInit', ({ cfg }) => {
-      this.appButtons.find(({ props }) => props.appID === cfg.id).setInitializing();
+      const appButton = this.appButtons.find(({ props }) => props.appID === cfg.id);
+      if (appButton) {
+        appButton.setInitializing();
+      }
     });
     this.events.on('appStart', ({ cfg }) => {
-      this.appButtons.find(({ props }) => props.appID === cfg.id).setStarted();
+      const appButton = this.appButtons.find(({ props }) => props.appID === cfg.id);
+      if (appButton) {
+        appButton.setStarted();
+      }
     });
     this.events.on('appEnd', ({ cfg }) => {
-      this.appButtons.find(({ props }) => props.appID === cfg.id).setClosed();
+      const appButton = this.appButtons.find(({ props }) => props.appID === cfg.id);
+      if (appButton) {
+        appButton.setClosed();
+      }
     });
 
     this.appMenu = new AppMenu({
@@ -89,6 +99,11 @@ export default class AppLauncher {
       onInfoButton: this.onUtilInfoButton.bind(this),
       onBackButton: this.onUtilBackButton.bind(this),
     });
+
+    this.infoText = new InfoText({
+      text: this.getLocalizedValue(this.config.infoText),
+    });
+
     this.appArea = new AppArea();
     this.inputMask = new InputMask();
 
@@ -256,6 +271,12 @@ export default class AppLauncher {
     this.appButtons.forEach((button) => {
       button.setName(this.getLocalizedValue(this.config.appCfgs[button.props.appID].name));
     });
+
+    const newInfoText = new InfoText({
+      text: this.getLocalizedValue(this.config.infoText),
+    });
+    this.infoText.$element.replaceWith(newInfoText.render());
+    this.infoText = newInfoText;
 
     this.logo.resize();
   }
@@ -487,6 +508,7 @@ export default class AppLauncher {
     this.$element.append(this.logo.render());
     this.$element.append(this.appMenu.render());
     this.$element.append(this.appArea.render());
+    this.$element.append(this.infoText.render());
     this.$element.append(this.overlay.render());
     this.$element.append(this.utilBar.render());
     this.$element.append(this.inputMask.render());
@@ -502,4 +524,5 @@ AppLauncher.defaultCfg = {
   langMenuShow: false,
   theme: 'default',
   maxIconsPerRow: 6,
+  infoText: '',
 };

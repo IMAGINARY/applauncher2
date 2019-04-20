@@ -49,6 +49,10 @@ body {
   transition: opacity 0.5s, visibility 0s linear;
 }
 
+.info-text {
+  transition: opacity 0.5s, visibility 0s linear;
+}
+
 .overlay {
   max-height: 0;
   .overlay-background {
@@ -81,6 +85,11 @@ body.mode-menu {
     opacity: 1;
     visibility: visible;
     transition: opacity 0.5s, visibility 0s linear 0s;
+  }
+
+  .info-text {
+    opacity: 1;
+    visibility: visible;
   }
 }
 
@@ -116,6 +125,10 @@ body.mode-app {
     display: block;
   }
 
+  .info-text {
+    opacity: 0;
+  }
+
   .util-button-close {
     margin-top: 0;
   }
@@ -149,6 +162,10 @@ body.mode-blank {
 
   .appContainer {
     display: block;
+  }
+
+  .info-text {
+    opacity: 0;
   }
 }
 
@@ -188,4 +205,6 @@ body.overlay-visible {
     opacity: 0;
     visibility: hidden;
   }
+
+
 }

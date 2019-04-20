@@ -78,6 +78,16 @@ apps:
 infoApp: https://imaginary.github.io/cindyjs-apps/info
 
 #
+# Text that will be shown in the menu beneath the app icons.
+# It's possible to specify a single string for all languages or to configure
+# each language separately. Use 'default' as a language code to have
+# a default fallback title.
+#
+# infoText:
+#  en: Help text
+#  es: Texto de ayuda
+
+#
 # Icons per row
 # Allows overriding the default icon layout by specifying an array of integers
 # indicating how many icons to use per row.
