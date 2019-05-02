@@ -16,9 +16,10 @@ export default class Application extends EventEmitter {
   constructor(config, appLauncher) {
     super();
 
-    if (new.target === Application) {
-      throw new TypeError('Cannot construct Application instances directly');
-    }
+    // Not yet supported
+    // if (new.target === Application) {
+    //   throw new TypeError('Cannot construct Application instances directly');
+    // }
 
     this.appLauncher = appLauncher;
 

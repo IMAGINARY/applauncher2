@@ -1,4 +1,4 @@
-// import '@babel/polyfill';
+import '@babel/polyfill';
 import Promise from 'bluebird';
 import AppLauncherLoader from './applauncher-loader';
 import LoaderView from './components/loader-view';

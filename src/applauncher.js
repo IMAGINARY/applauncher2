@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import isAbsoluteUrl from 'is-absolute-url';
+import isAbsoluteUrl from './helpers/is-absolute-url';
 import IframeApplication from './applications/iframe-application';
 import ExecutableApplication from './applications/executable-application';
 import RemoteApplication from './applications/remote-application';
