@@ -75,17 +75,17 @@ function bundleApp(isProduction) {
     .pipe(gulp.dest(http_public + js_out_dir + '/'));
 }
 
-gulp.task('scripts:dev', function () {
-  bundleApp(false);
-});
+// gulp.task('scripts:dev', function () {
+//   bundleApp(false);
+// });
 
 gulp.task('scripts:prod', function (){
   bundleApp(true);
 });
 
-gulp.task('scripts:watch', function () {
-  gulp.watch(['./src/*.js'], ['scripts:dev']);
-});
+// gulp.task('scripts:watch', function () {
+//   gulp.watch(['./src/*.js'], ['scripts:dev']);
+// });
 
 gulp.task('sass:default', function () {
   gulp.src(['./sass/**/*.scss', '!./sass/themes/**/*.scss'])
@@ -122,4 +122,4 @@ gulp.task('distribute', function () {
   });
 });
 
-gulp.task('default', ['sass', 'scripts:dev']);
+gulp.task('default', ['sass', 'scripts:prod']);

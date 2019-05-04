@@ -19,21 +19,21 @@ $(() => {
   loader.events.on('progress', (progress) => {
     loaderView.setProgress(progress);
   });
-  loader.run().catch((e) => {
-    loaderView.showError(e.message);
-    throw e;
-  }).then((cfg) => {
-    const appLauncher = new AppLauncher(cfg);
-    window.IMAGINARY.AppLauncher = appLauncher;
-    return appLauncher.loadPlugins()
-      .then(() => appLauncher)
-      .catch((e) => {
-        loaderView.showError(e.message);
-      });
-  }).then((appLauncher) => {
-    appLauncher.loadTheme();
-    loaderView.$element.remove();
-    $('body').append(appLauncher.render());
-    appLauncher.onResize();
-  });
+  loader.run()
+    .then((cfg) => {
+      const appLauncher = new AppLauncher(cfg);
+      window.IMAGINARY.AppLauncher = appLauncher;
+      return appLauncher.loadPlugins()
+        .then(() => appLauncher);
+    })
+    .then((appLauncher) => {
+      appLauncher.loadTheme();
+      loaderView.$element.remove();
+      $('body').append(appLauncher.render());
+      appLauncher.onResize();
+    })
+    .catch((e) => {
+      loaderView.showError(e.message);
+      throw e;
+    });
 });

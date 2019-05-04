@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import isAbsoluteUrl from './helpers/is-absolute-url';
+import isAbsoluteURL from './helpers/is-absolute-url';
 import IframeApplication from './applications/iframe-application';
 import ExecutableApplication from './applications/executable-application';
 import RemoteApplication from './applications/remote-application';
@@ -54,17 +54,17 @@ export default class AppLauncher {
     this.$body = $('body');
     this.$body.addClass('lock-position');
 
-    this.events.on('appInit', ({ cfg }) => {
+    this.events.on('appInit', () => {
       this.$body.removeClass('app-running');
       this.$body.addClass('app-init');
     });
 
-    this.events.on('appStart', ({ cfg }) => {
+    this.events.on('appStart', () => {
       this.$body.removeClass('app-init');
       this.$body.addClass('app-running');
     });
 
-    this.events.on('appEnd', ({ cfg }) => {
+    this.events.on('appEnd', () => {
       this.$body.removeClass('app-init');
       this.$body.removeClass('app-running');
     });
@@ -162,7 +162,7 @@ export default class AppLauncher {
 
     this.config.pluginCfgs.forEach((cfg) => {
       cfg.stylesheets.forEach((stylesheet) => {
-        const url = isAbsoluteUrl(stylesheet) ? stylesheet : `${cfg.root}/${stylesheet}`;
+        const url = isAbsoluteURL(stylesheet) ? stylesheet : `${cfg.root}/${stylesheet}`;
         const $linkElement = $('<link>');
         $linkElement.attr('rel', 'stylesheet');
         $linkElement.attr('type', 'text/css');
@@ -174,7 +174,7 @@ export default class AppLauncher {
     this.config.pluginCfgs.forEach((cfg) => {
       cfg.scripts.forEach((script) => {
         loadHandlers.push(new Promise((accept, reject) => {
-          const url = isAbsoluteUrl(script) ? script : `${cfg.root}/${script}`;
+          const url = isAbsoluteURL(script) ? script : `${cfg.root}/${script}`;
           const $scriptElement = $('<script>');
           $scriptElement.attr('type', 'text/javascript');
           $scriptElement.on('load', () => {
@@ -195,7 +195,6 @@ export default class AppLauncher {
   /**
    * Loads and activates a theme
    *
-   * @param {string} themeName
    */
   loadTheme() {
     if (this.config.theme !== undefined) {
@@ -348,7 +347,7 @@ export default class AppLauncher {
   /**
    * App icon click handler
    *
-   * @param {object} app
+   * @param {string} appID
    *  The app config
    * @return {boolean}
    */
@@ -373,7 +372,7 @@ export default class AppLauncher {
     }
     this.inputMask.disableUserInput();
     this.closeApp();
-    const app = this.createApplication(appCfg, this);
+    const app = this.createApplication(appCfg);
     app.init();
     this.events.emit('appInit', { cfg: appCfg });
     // Delay for fluid animation
