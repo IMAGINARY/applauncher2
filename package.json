@@ -26,7 +26,7 @@
     "gulp-sass": "^2.1.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-util": "^3.0.7",
-    "node-sass": "^4.7.1",
+    "node-sass": "^4.13.1",
     "tar-pack": "^3.4.0",
     "vinyl-source-stream": "^1.1.0"
   },
