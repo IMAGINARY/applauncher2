@@ -173,7 +173,7 @@ export default class AppLauncher {
 
     this.config.pluginCfgs.forEach((cfg) => {
       cfg.scripts.forEach((script) => {
-        loadHandlers.push(new Promise((accept, reject) => {
+        loadHandlers.push(() => new Promise((accept, reject) => {
           const url = isAbsoluteURL(script) ? script : `${cfg.root}/${script}`;
           const $scriptElement = $('<script>');
           $scriptElement.attr('type', 'text/javascript');
@@ -189,7 +189,7 @@ export default class AppLauncher {
       });
     });
 
-    return Promise.all(loadHandlers);
+    return Promise.each(loadHandlers, handler => handler());
   }
 
   /**
