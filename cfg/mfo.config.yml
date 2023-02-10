@@ -1,0 +1,75 @@
+lang: en
+title:
+  en: IMAGINARY – OPEN MATHEMATICS
+#  de: MFO
+# logo: assets/img/lg_imaginary_white.png
+# logo:
+#   en: assets/img/lg_imaginary_white.png
+#   de: assets/img/lg_imaginary_white.png
+
+theme: mfo
+
+# default # blue e, green.
+
+apps:
+  - apps/ext/snapshot-slider
+  - apps/ext/surfer
+  - apps/ext/math-to-touch
+  - apps/ext/duneash
+
+  - apps/ext/futureofglaciers
+  - apps/ext/melting-ice-caps
+  - apps/ext/powergrid-dynamics-simulation
+  - apps/ext/frozenlight
+
+#  - apps/cindyjs/iornament
+#  - apps/cindyjs/doppelpendel
+#  - apps/cindyjs/fish
+#  - apps/cindyjs/sphere-chaos
+#  - apps/cindyjs/ausparken
+#  - apps/cindyjs/kaleidoskop
+#  - apps/cindyjs/platonic-solids
+#  - apps/cindyjs/polytope-morpher
+#  - apps/cindyjs/solitaire
+#  - apps/cindyjs/image-spiral
+#  - apps/cindyjs/tree
+
+infoApp: apps/ext/info-mfo
+# apps/ext/info-planeten-erde
+# apps/cindyjs/info
+
+
+#
+# Icons per row
+# Allows overriding the default icon layout by specifying an array of integers
+# indicating how many icons to use per row.
+# This new layout will only be used if the sum of all rows matches exactly the
+# number of apps, and if no row exceeds the maximum number of icons allowed (6).
+#
+iconsPerRow: [4, 4]
+
+#
+# Show language switcher menu (true/false)
+#
+# NOTE: It's not always a good idea to enable a language switcher. It will make
+# it more difficult for people coming across the station and people watching over
+# the user's shoulder to understand what's going on and they might just walk
+# away or waste time finding how to switch languages instead of playing with our
+# software. Enable ONLY if needed for the exhibition.
+#
+# IMPORTANT: If you enable the language menu choose which languages to show
+# wisely! Select only those appropriate to the exhibition and avoid showing
+# more than one local variant of the same language.
+# Also only enable languages for which translations are available.
+
+langMenuShow: false
+
+#
+# Indicate which languages to show if the language switcher menu is shown
+# (use ISO 639-1 language codes)
+#
+langMenuItems:
+  - en
+#  - de
+#  - fr
+#  - nl
